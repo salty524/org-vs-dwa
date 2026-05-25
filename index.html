@@ -186,7 +186,6 @@ a:hover {
         </div>
 
         <div id="verdict" class="result">─</div>
-        <div id="diff" class="diff-text"></div>
 
         <p style="text-align: center; font-size: 12px; color: #888888; margin-bottom: 15px;">
             データ最終更新日時: <span id="update-time">─</span>
@@ -278,7 +277,6 @@ fetch('./data.json', { cache: 'no-store' })
         document.getElementById('g3').innerText = g3.toLocaleString() + ' G';
 
         const verdictDiv = document.getElementById('verdict');
-        const diffDiv = document.getElementById('diff');
 
         // null が含まれる場合は判定不能
         if (hasError) {
@@ -291,23 +289,22 @@ fetch('./data.json', { cache: 'no-store' })
 
         const oScore = o1 + (1.5 * o2) + (2 * o3);
         const gScore = g1 + (1.5 * g2) + (2 * g3);
-        const diff = Math.abs(Math.floor(oScore - gScore));
+        // スコアの差に0.16をかけて100回換算のリアルなゴールド差に変換
+        const scoreDiff = Math.abs(gScore - oScore);
+        const realGoldDiff = Math.floor(scoreDiff * 0.16);
 
         document.getElementById('o-score').innerText = Math.floor(oScore).toLocaleString();
         document.getElementById('g-score').innerText = Math.floor(gScore).toLocaleString();
 
         if (oScore > gScore) {
-            verdictDiv.innerText = '🔥 現在は「オーグリード大陸」で引くのがお得です';
+            verdictDiv.innerHTML = `🔥 現在は「オーグリード大陸」で引くのがお得です<br><span style="font-size: 14px; font-weight: normal; color: #aaa;">ドワチャッカより <b>${realGoldDiff.toLocaleString()} G</b> お得（100回換算）</span>`;
             verdictDiv.className = 'result orgo';
-            diffDiv.innerHTML = `ドワチャッカより <span>${diff.toLocaleString()} G</span> お得（100回換算）`;
         } else if (gScore > oScore) {
-            verdictDiv.innerText = '💎 現在は「ドワチャッカ大陸」で引くのがお得です';
+            verdictDiv.innerHTML = `💎 現在は「ドワチャッカ大陸」で引くのがお得です<br><span style="font-size: 14px; font-weight: normal; color: #aaa;">オーグリードより <b>${realGoldDiff.toLocaleString()} G</b> お得（100回換算）</span>`;
             verdictDiv.className = 'result gata';
-            diffDiv.innerHTML = `オーグリードより <span>${diff.toLocaleString()} G</span> お得（100回換算）`;
         } else {
             verdictDiv.innerText = '⚖️ 両大陸の期待値は現在ほぼ同等です';
             verdictDiv.className = 'result even';
-            diffDiv.innerHTML = '';
         }
     })
     .catch(err => {
