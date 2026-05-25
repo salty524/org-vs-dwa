@@ -222,8 +222,9 @@ a:hover {
 
         <div class="info-section">
             <h2>計算式について</h2>
-            <p>景品価格 <code>x, y, z</code>（1〜3等）にゲーム内通常確率（0.16% / 0.24% / 0.32%）を乗じた期待値の和 <code>0.16x + 0.24y + 0.32z</code> で比較しています。チャンスモードは考慮していません。スコアの単位は <strong style="color:#e0e0e0;">100回換算の景品合計（G）</strong> です。<br>
-            ドワチャッカの景品価格は固定のため期待値は常に <code>109,120</code>。オーグリードが <code>x + 1.5y + 2z > 682,000</code> を満たす場合に有利と判定します。</p>
+            <p>1〜3等の景品バザー価格をそれぞれ <code>x, y, z</code> とし、ゲーム内通常確率（1等: 0.16% / 2等: 0.24% / 3等: 0.32%）を乗じた期待値の和 <code>0.16x + 0.24y + 0.32z</code> で比較しています。チャンスモード時の確率は考慮していません。<br>
+            スコアは <strong style="color:#e0e0e0;">ふくびき100回分の1〜3等景品 期待値合計（G）</strong> を表しており、差分表示もこの100回換算の数値です。</p>
+            <p>ドワチャッカの景品価格は常に固定（1等: 297,000G / 2等: 150,000G / 3等: 80,000G）のため、期待値は <code>109,120</code> で変わりません。これを基準に、オーグリードが <code>x + 1.5y + 2z > 682,000</code> を満たす場合に有利と判定します。</p>
 
             <h2>データ引用元</h2>
             <p>オーグリードの相場は <a href="https://dqx-souba.game-blog.app" target="_blank" rel="noopener">DQX相場情報サイト</a> の7日間平均価格を毎日2回（6:00 / 18:00）自動取得しています。</p>
@@ -235,7 +236,7 @@ a:hover {
 </div>
 
 <div class="credit-footer">
-    <span>&copy; 2026 tksalt (@tks4q)</span>
+    <span>&copy; 2026 tksalt</span>
     <span>|</span>
     <a href="https://github.com/salty524/org-vs-dwa" target="_blank" rel="noopener">GitHub</a>
     <span>|</span>
