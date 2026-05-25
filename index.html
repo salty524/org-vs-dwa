@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>DQX ふくびき期待値表示</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #121212;
+            color: #e0e0e0;
+            text-align: center;
+            padding: 20px;
+        }
+        .card {
+            background: #1e1e1e;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            display: inline-block;
+            max-width: 680px;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: left;
+        }
+        h1 {
+            text-align: center;
+            font-size: 22px;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+        .sub-text {
+            text-align: center;
+            color: #aaaaaa;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #aaaaaa;
+        }
+        .result {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            padding: 12px;
+            border-radius: 6px;
+        }
+        .result.orgo {
+            color: #ff8787;
+            background-color: #3d1d1d;
+            border: 1px solid #8c3a3a;
+        }
+        .result.gata {
+            color: #69db7c;
+            background-color: #1b3d22;
+            border: 1px solid #3b7c47;
+        }
+        .result.even {
+            color: #e0e0e0;
+            background-color: #2d2d2d;
+            border: 1px solid #4d4d4d;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background: #252525;
+        }
+        th, td {
+            border: 1px solid #3d3d3d;
+            padding: 10px;
+            text-align: right;
+        }
+        th {
+            background-color: #2d2d2d;
+            color: #ffffff;
+            text-align: center;
+            font-size: 14px;
+        }
+        td {
+            font-size: 15px;
+        }
+        td:first-child {
+            text-align: center;
+            font-weight: bold;
+        }
+        .info-section {
+            margin-top: 30px;
+            border-top: 1px solid #3d3d3d;
+            padding-top: 20px;
+            font-size: 13px;
+            color: #b0b0b0;
+            line-height: 1.6;
+        }
+        .info-section h2 {
+            font-size: 15px;
+            color: #ffffff;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            border-left: 4px solid #4da6ff;
+            padding-left: 8px;
+        }
+        .info-section p {
+            margin: 5px 0 10px 0;
+        }
+        code {
+            background: #2d2d2d;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #ff922b;
+            font-family: monospace;
+        }
+        a {
+            color: #4da6ff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🎲 DQX ふくびき期待値計算ツール</h1>
+        <p class="sub-text">最新のバザー相場からどちらの大陸が得か自動計算します</p>
+        
+        <div id="loading" class="loading">データを読み込み中...</div>
+        
+        <div id="content" style="display:none;">
+            <div id="verdict" class="result">─</div>
+            <p style="text-align: center; font-size: 12px; color: #888888; margin-bottom: 15px;">データ最終更新日時: <span id="update-time">─</span></p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>大陸</th>
+                        <th>1等価格</th>
+                        <th>2等価格</th>
+                        <th>3等価格</th>
+                        <th>期待値スコア</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="row-orgo">
+                        <td>オーグリード</td>
+                        <td id="o1">─</td>
+                        <td id="o2">─</td>
+                        <td id="o3">─</td>
+                        <td id="o-score">─</td>
+                    </tr>
+                    <tr id="row-gata">
+                        <td>ドワチャッカ</td>
+                        <td id="g1">─</td>
+                        <td id="g2">─</td>
+                        <td id="g3">─</td>
+                        <td id="g-score">─</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="info-section">
+                <h2>計算式について</h2>
+                <p>1等・2等・3等の景品バザー価格をそれぞれ <code>x, y, z</code> とし、ふくびきの排出率を考慮した1〜3等の期待値の和を以下の式で算出しています：<br>
+                <code>期待値 = 0.16x + 0.24y + 0.32z</code></p>
+                <p>ドワチャッカ大陸の景品価格は常に一定（1等: 297,000G、2等: 150,000G、3等: 80,000G）であるため、ドワチャッカの期待値の和は <code>109,120</code> で固定となります。<br>
+                これを基準とし、オーグリード大陸の価格が以下の判定式を満たす場合に「オーグリード側が有利」と判定します：<br>
+                <code>x + 1.5y + 2z > 682,000</code></p>
+                
+                <h2>データ引用元</h2>
+                <p>オーグリード大陸の各コイン価格（7日間平均値）は、<a href="https://dqx-souba.game-blog.app" target="_blank" rel="noopener">DQX相場情報サイト</a>のデータを定期的にスクレイピングして自動更新しています。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        fetch('./data.json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+                document.getElementById('update-time').innerText = data.updated_at;
+
+                const o1 = data.aucland.x, o2 = data.aucland.y, o3 = data.aucland.z;
+                const g1 = data.dwacha.x, g2 = data.dwacha.y, g3 = data.dwacha.z;
+
+                document.getElementById('o1').innerText = o1.toLocaleString() + " G";
+                document.getElementById('o2').innerText = o2.toLocaleString() + " G";
+                document.getElementById('o3').innerText = o3.toLocaleString() + " G";
+                document.getElementById('g1').innerText = g1.toLocaleString() + " G";
+                document.getElementById('g2').innerText = g2.toLocaleString() + " G";
+                document.getElementById('g3').innerText = g3.toLocaleString() + " G";
+
+                // 判定式スコア (x + 1.5*y + 2*z)
+                const oScore = o1 + (1.5 * o2) + (2 * o3);
+                const gScore = g1 + (1.5 * g2) + (2 * g3);
+
+                document.getElementById('o-score').innerText = Math.floor(oScore).toLocaleString();
+                document.getElementById('g-score').innerText = Math.floor(gScore).toLocaleString();
+
+                const verdictDiv = document.getElementById('verdict');
+                if (oScore > gScore) {
+                    verdictDiv.innerText = "🔥 現在は「オーグリード大陸」で引くのがお得です";
+                    verdictDiv.className = "result orgo";
+                } else if (gScore > oScore) {
+                    verdictDiv.innerText = "💎 現在は「ドワチャッカ大陸」で引くのがお得です";
+                    verdictDiv.className = "result gata";
+                } else {
+                    verdictDiv.innerText = "⚖️ 両大陸の期待値は現在ほぼ同等です";
+                    verdictDiv.className = "result even";
+                }
+            })
+            .catch(err => {
+                document.getElementById('loading').innerText = "データの読み込みに失敗しました。";
+                console.error(err);
+            });
+    </script>
+</body>
+</html>
