@@ -16,15 +16,15 @@ def get_7day_average(url):
     api_key = os.environ.get("SCRAPERAPI_KEY")
     if not api_key:
         print("Error: SCRAPERAPI_KEY is not set.")
-        return 0
+        return None
 
     try:
         proxy_url = f"http://api.scraperapi.com?api_key={api_key}&url={url}"
         res = requests.get(proxy_url, timeout=30)
         if res.status_code != 200:
             print(f"Error: Status code {res.status_code}")
-            return 0
-        
+            return None
+
         soup = BeautifulSoup(res.text, 'html.parser')
         for tr in soup.find_all('tr'):
             tds = tr.find_all('td')
@@ -41,28 +41,28 @@ def get_7day_average(url):
 
     except Exception as e:
         print(f"Exception: {e}")
-    
-    return 0
+
+    return None
 
 def main():
     price_x = get_7day_average(URLS["x"])
     price_y = get_7day_average(URLS["y"])
     price_z = get_7day_average(URLS["z"])
-    
-    o_x = price_x if price_x > 0 else 440000
-    o_y = price_y if price_y > 0 else 50000
-    o_z = price_z if price_z > 0 else 70000
 
+    # スクレイプ失敗時は null を入れる（ハードコードのフォールバックなし）
     prices = {
         "updated_at": datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S'),
-        "aucland": {"x": o_x, "y": o_y, "z": o_z},
+        "aucland": {"x": price_x, "y": price_y, "z": price_z},
         "dwacha": {"x": 297000, "y": 150000, "z": 80000}
     }
-    
+
     with open('data.json', 'w', encoding='utf-8') as f:
         json.dump(prices, f, indent=4, ensure_ascii=False)
-    
-    print(f"Data update completed. (1st: {o_x}, 2nd: {o_y}, 3rd: {o_z})")
+
+    status_x = f"{price_x:,}" if price_x is not None else "取得失敗"
+    status_y = f"{price_y:,}" if price_y is not None else "取得失敗"
+    status_z = f"{price_z:,}" if price_z is not None else "取得失敗"
+    print(f"Data update completed. (1等: {status_x}, 2等: {status_y}, 3等: {status_z})")
 
 if __name__ == "__main__":
     main()
