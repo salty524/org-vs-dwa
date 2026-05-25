@@ -2,19 +2,18 @@ name: Auto Price Scraper
 
 on:
   schedule:
-    # 協定世界時(UTC)で指定
     - cron: '0 21,9 * * *'
-  workflow_dispatch: # 手動
+  workflow_dispatch:
 
 jobs:
   scrape-and-update:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      
+
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
-      
+
     steps:
     - name: チェックアウト
       uses: actions/checkout@v4
@@ -26,9 +25,11 @@ jobs:
 
     - name: 必要なライブラリを入れる
       run: |
-        pip install beautifulsoup4 pytz cloudscraper
+        pip install requests beautifulsoup4 pytz
 
     - name: スクレイピング実行
+      env:
+        SCRAPERAPI_KEY: ${{ secrets.SCRAPERAPI_KEY }}
       run: python scrape.py
 
     - name: 更新されたデータをGitHubに保存（コミット）
@@ -36,5 +37,4 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add data.json
-        # 変更があったときだけプッシュ
-        git diff --cached --quiet || (git commit -m "最新の相場に更新しました" && git push)
+        git diff --cached --quiet || (git commit -m "Updated" && git push)
