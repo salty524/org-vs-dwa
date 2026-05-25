@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>DQX ふくびき期待値表示</title>
+    <title>DQX ふくびき期待値計算ツール</title>
     <style>
         body {
             font-family: sans-serif;
@@ -124,7 +124,7 @@
 </head>
 <body>
     <div class="card">
-        <h1>🎲 DQX ふくびき期待値表示</h1>
+        <h1>🎲 DQX ふくびき期待値計算ツール</h1>
         <p class="sub-text">最新のバザー相場からどちらの大陸が得か自動計算します</p>
         
         <div id="loading" class="loading">データを読み込み中...</div>
@@ -145,14 +145,14 @@
                 </thead>
                 <tbody>
                     <tr id="row-orgo">
-                        <td>オーグリード</td>
+                        <td>オーグリード<br><span style="font-size: 11px; color: #aaaaaa; font-weight: normal;">（7日間平均価格）</span></td>
                         <td id="o1">─</td>
                         <td id="o2">─</td>
                         <td id="o3">─</td>
                         <td id="o-score">─</td>
                     </tr>
                     <tr id="row-gata">
-                        <td>ドワチャッカ</td>
+                        <td>ドワチャッカ<br><span style="font-size: 11px; color: #aaaaaa; font-weight: normal;">（店売り価格）</span></td>
                         <td id="g1">─</td>
                         <td id="g2">─</td>
                         <td id="g3">─</td>
@@ -170,13 +170,13 @@
                 <code>x + 1.5y + 2z > 682,000</code></p>
                 
                 <h2>データ引用元</h2>
-                <p>オーグリード大陸の各コイン価格（7日間平均値）は、<a href="https://dqx-souba.game-blog.app" target="_blank" rel="noopener">DQX相場情報サイト</a>のデータを定期的にスクレイピングして自動更新しています。</p>
+                <p>オーグリード大陸の各コイン価格は、<a href="https://dqx-souba.game-blog.app" target="_blank" rel="noopener">DQX相場情報サイト</a>のデータを毎日2回（朝6:00 / 夜18:00）自動的に引用して更新しています。</p>
             </div>
         </div>
     </div>
 
     <script>
-        fetch('./data.json?t=' + new Date().getTime())
+        fetch('./data.json', { cache: 'no-store' })
             .then(response => response.json())
             .then(data => {
                 document.getElementById('loading').style.display = 'none';
@@ -193,7 +193,6 @@
                 document.getElementById('g2').innerText = g2.toLocaleString() + " G";
                 document.getElementById('g3').innerText = g3.toLocaleString() + " G";
 
-                // 判定式スコア (x + 1.5*y + 2*z)
                 const oScore = o1 + (1.5 * o2) + (2 * o3);
                 const gScore = g1 + (1.5 * g2) + (2 * g3);
 
