@@ -1,8 +1,9 @@
+import os
 import json
 from datetime import datetime
 import pytz
 import re
-import cloudscraper
+import requests
 from bs4 import BeautifulSoup
 
 URLS = {
@@ -12,15 +13,14 @@ URLS = {
 }
 
 def get_7day_average(url):
+    api_key = os.environ.get("SCRAPERAPI_KEY")
+    if not api_key:
+        print("Error: SCRAPERAPI_KEY is not set.")
+        return 0
+
     try:
-        scraper = cloudscraper.create_scraper(
-            browser={
-                'browser': 'chrome',
-                'platform': 'windows',
-                'desktop': True
-            }
-        )
-        res = scraper.get(url, timeout=15)
+        proxy_url = f"http://api.scraperapi.com?api_key={api_key}&url={url}"
+        res = requests.get(proxy_url, timeout=30)
         if res.status_code != 200:
             print(f"Error: Status code {res.status_code}")
             return 0
