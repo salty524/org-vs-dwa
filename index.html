@@ -187,10 +187,6 @@ a:hover {
 
         <div id="verdict" class="result">─</div>
 
-        <p style="text-align: center; font-size: 12px; color: #888888; margin-bottom: 15px;">
-            データ最終更新日時: <span id="update-time">─</span>
-        </p>
-
         <table>
             <thead>
                 <tr>
@@ -198,7 +194,7 @@ a:hover {
                     <th>1等価格</th>
                     <th>2等価格</th>
                     <th>3等価格</th>
-                    <th>期待値スコア</th>
+                    <th>1回あたり期待値</th>
                 </tr>
             </thead>
             <tbody>
@@ -219,14 +215,17 @@ a:hover {
             </tbody>
         </table>
 
+        <p style="text-align: center; font-size: 12px; color: #888888; margin-top: 10px; margin-bottom: 0;">
+            データ最終更新日時: <span id="update-time">─</span>
+        </p>
+
         <div class="info-section">
             <h2>計算式について</h2>
-            <p>1〜3等の景品バザー価格をそれぞれ <code>x, y, z</code> とし、ゲーム内通常確率（1等: 0.16% / 2等: 0.24% / 3等: 0.32%）を乗じた期待値の和 <code>0.16x + 0.24y + 0.32z</code> で比較しています。チャンスモード時の確率は考慮していません。<br>
-            スコアは <strong style="color:#e0e0e0;">ふくびき100回分の1〜3等景品 期待値合計（G）</strong> を表しており、差分表示もこの100回換算の数値です。</p>
-            <p>ドワチャッカの景品価格は常に固定（1等: 297,000G / 2等: 150,000G / 3等: 80,000G）のため、期待値は <code>109,120</code> で変わりません。これを基準に、オーグリードが <code>x + 1.5y + 2z > 682,000</code> を満たす場合に有利と判定します。</p>
+            <p>1〜3等の景品バザー価格をそれぞれ <code>x, y, z</code> とし、ゲーム内通常確率（1等: 0.16% / 2等: 0.24% / 3等: 0.32%）を乗じた <code>0.16x + 0.24y + 0.32z</code> を1回あたりの期待値（1〜3等分のみ）として表示しています。チャンスモード時の確率・4等以下の共通景品は考慮していません。</p>
+            <p>ドワチャッカの景品価格は常に固定（1等: 297,000G / 2等: 150,000G / 3等: 80,000G）のため、期待値は <code>1,091 G</code> で変わりません。これを基準に、オーグリードが <code>x + 1.5y + 2z > 682,000</code> を満たす場合に有利と判定します。上部の100回換算のG差は判定式の差分に0.16を乗じて算出しています。</p>
 
             <h2>データ引用元</h2>
-            <p>オーグリードの相場は <a href="https://dqx-souba.game-blog.app" target="_blank" rel="noopener">DQX相場情報サイト</a> の7日間平均価格を毎日午前1時頃に自動取得しています。</p>
+            <p>オーグリードの相場は <a href="https://dqx-souba.game-blog.app" target="_blank" rel="noopener">DQX相場情報サイト</a> の7日間平均価格を毎日自動取得しています。</p>
 
             <h2>面白いダジャレ</h2>
             <p>ドワチャッカのドア着火・・・ｗ</p>
@@ -287,14 +286,17 @@ fetch('./data.json', { cache: 'no-store' })
             return;
         }
 
+        // 判定は x + 1.5y + 2z で行う
         const oScore = o1 + (1.5 * o2) + (2 * o3);
         const gScore = g1 + (1.5 * g2) + (2 * g3);
-        // スコアの差に0.16をかけて100回換算のリアルなゴールド差に変換
         const scoreDiff = Math.abs(gScore - oScore);
         const realGoldDiff = Math.floor(scoreDiff * 0.16);
 
-        document.getElementById('o-score').innerText = Math.floor(oScore).toLocaleString();
-        document.getElementById('g-score').innerText = Math.floor(gScore).toLocaleString();
+        // 表示は 0.16x + 0.24y + 0.32z（1回あたり期待値・1〜3等分のみ）
+        const oEV = Math.floor(0.16*o1 + 0.24*o2 + 0.32*o3);
+        const gEV = Math.floor(0.16*g1 + 0.24*g2 + 0.32*g3);
+        document.getElementById('o-score').innerText = oEV.toLocaleString() + ' G';
+        document.getElementById('g-score').innerText = gEV.toLocaleString() + ' G';
 
         if (oScore > gScore) {
             verdictDiv.innerHTML = `🔥 現在は「オーグリード大陸」で引くのがお得です<br><span style="font-size: 14px; font-weight: normal; color: #aaa;">ドワチャッカより <b>${realGoldDiff.toLocaleString()} G</b> お得（100回換算）</span>`;
