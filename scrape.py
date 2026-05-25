@@ -23,19 +23,18 @@ def get_7day_average(url):
         
         soup = BeautifulSoup(res.text, 'html.parser')
         
+        # 表の行（tr）を一つずつループ
         for tr in soup.find_all('tr'):
-            text = tr.get_text()
-            if '7日' in text:
-                numbers = re.findall(r'\d+', text.replace(',', ''))
-                for num in numbers:
-                    val = int(num)
-                    if val > 100:
-                        return val
-
-        page_text = soup.get_text()
-        match = re.search(r'7日(?:間の)?平均.*?([\d,]+)', page_text)
-        if match:
-            return int(match.group(1).replace(',', ''))
+            tds = tr.find_all('td')
+            # セルが2つ以上ある行を対象にする
+            if len(tds) >= 2:
+                # 1つ目のセルに「7日」という文字が含まれている場合
+                if '7日' in tds[0].get_text():
+                    # 2つ目のセル（価格側）のテキストを取得して、カンマやGや空白を削除
+                    price_text = tds[1].get_text().replace(',', '').replace('G', '').strip()
+                    # 数字だけの文字列になっていたら整数に変換して返す
+                    if price_text.isdigit():
+                        return int(price_text)
 
     except Exception as e:
         print(f"Exception: {e}")
@@ -47,6 +46,7 @@ def main():
     price_y = get_7day_average(URLS["y"])
     price_z = get_7day_average(URLS["z"])
     
+    # データが取得できなかった場合のみ、デフォルト値を適用
     o_x = price_x if price_x > 0 else 440000
     o_y = price_y if price_y > 0 else 50000
     o_z = price_z if price_z > 0 else 70000
@@ -69,6 +69,7 @@ def main():
         json.dump(prices, f, indent=4, ensure_ascii=False)
     
     print("Data update completed.")
+    print(f"Current Results -> 1st: {o_x}, 2nd: {o_y}, 3rd: {o_z}")
 
 if __name__ == "__main__":
     main()
