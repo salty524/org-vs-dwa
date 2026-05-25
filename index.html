@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>オーグリードvsドワチャッカ</title>
     <style>
         body {
@@ -10,6 +11,7 @@
             color: #e0e0e0;
             text-align: center;
             padding: 20px;
+            margin: 0;
         }
         .card {
             background: #1e1e1e;
@@ -119,6 +121,46 @@
         }
         a:hover {
             text-decoration: underline;
+        }
+
+        /* 📱 スマホ用の調整スタイル */
+        @media (max-width: 520px) {
+            body {
+                padding: 10px;
+            }
+            .card {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 18px;
+            }
+            .sub-text {
+                font-size: 12px;
+                margin-bottom: 15px;
+            }
+            .result {
+                font-size: 15px;
+                padding: 10px;
+                line-height: 1.4;
+            }
+            th {
+                font-size: 11px;
+                padding: 6px 4px;
+            }
+            td {
+                font-size: 12px;
+                padding: 8px 4px;
+            }
+            td br + span {
+                display: block;
+                font-size: 9px !important;
+            }
+            .info-section {
+                font-size: 12px;
+            }
+            .info-section h2 {
+                font-size: 13px;
+            }
         }
     </style>
 </head>
