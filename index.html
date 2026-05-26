@@ -148,6 +148,16 @@ a:hover {
     color: #ffffff;
     text-decoration: underline;
 }
+a.hidden-link {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    display: block;
+}
+a.hidden-link:hover {
+    color: inherit;
+    text-decoration: none;
+}
 .credit-footer {
     margin-top: 20px;
     text-align: center;
@@ -200,9 +210,9 @@ a:hover {
             <tbody>
                 <tr id="row-orgo">
                     <td>オーグリード<br><span style="font-size: 11px; color: #aaaaaa; font-weight: normal;">（7日間平均価格）</span></td>
-                    <td id="o1">─</td>
-                    <td id="o2">─</td>
-                    <td id="o3">─</td>
+                    <td id="o1"><a id="o1-link" href="https://dqx-souba.game-blog.app/item/detail/69eb1ee7cf3b22281bbdb0ed" target="_blank" rel="noopener" class="hidden-link">─</a></td>
+                    <td id="o2"><a id="o2-link" href="https://dqx-souba.game-blog.app/item/detail/6967250f1dc565c0c0137140" target="_blank" rel="noopener" class="hidden-link">─</a></td>
+                    <td id="o3"><a id="o3-link" href="https://dqx-souba.game-blog.app/item/detail/6848bb617d51a045f9b67f69" target="_blank" rel="noopener" class="hidden-link">─</a></td>
                     <td id="o-score">─</td>
                 </tr>
                 <tr id="row-gata">
@@ -260,11 +270,14 @@ fetch('./data.json', { cache: 'no-store' })
 
         function formatCell(id, val) {
             const el = document.getElementById(id);
+            const link = document.getElementById(id + '-link');
             if (val === null) {
-                el.innerText = '取得失敗';
+                if (link) link.innerText = '取得失敗';
+                else el.innerText = '取得失敗';
                 el.classList.add('error-cell');
             } else {
-                el.innerText = val.toLocaleString() + ' G';
+                if (link) link.innerText = val.toLocaleString() + ' G';
+                else el.innerText = val.toLocaleString() + ' G';
             }
         }
 
