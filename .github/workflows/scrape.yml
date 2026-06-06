@@ -1,8 +1,8 @@
 name: Auto Price Scraper
 
 on:
-  schedule:
-    - cron: '30 21,9 * * *'
+#  schedule:
+#    - cron: '30 21,9 * * *'
   workflow_dispatch:
 
 jobs:
