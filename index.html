@@ -253,7 +253,8 @@ a.hidden-link:hover { color: inherit; text-decoration: none; }
 <body>
 <div class="card">
     <h1>DQX 金策期待値計算</h1>
-    <br>
+    <p class="sub-text">最新のバザー相場から自動計算します</p>
+
     <div id="loading" class="loading">データを読み込み中...</div>
 
     <div id="main-content" style="display:none;">
@@ -326,7 +327,7 @@ a.hidden-link:hover { color: inherit; text-decoration: none; }
 
             <div id="dogdra-verdict" class="result">─</div>
 
-            <div class="dogdra-summary">
+            <div class="dogdra-summary" style="grid-template-columns: 1fr 1fr;">
                 <div class="summary-card">
                     <div class="label">1人あたりコスト</div>
                     <div class="value" id="dd-cost">─</div>
@@ -334,10 +335,6 @@ a.hidden-link:hover { color: inherit; text-decoration: none; }
                 <div class="summary-card">
                     <div class="label">1人あたり期待報酬</div>
                     <div class="value" id="dd-reward">─</div>
-                </div>
-                <div class="summary-card">
-                    <div class="label">1人あたり期待損益</div>
-                    <div class="value" id="dd-profit">─</div>
                 </div>
             </div>
 
@@ -413,16 +410,13 @@ function calcDogdra() {
     document.getElementById('dd-cost').innerText   = Math.floor(costPerPerson).toLocaleString() + ' G';
     document.getElementById('dd-reward').innerText = Math.floor(rewardPerPerson).toLocaleString() + ' G';
 
-    const profitEl   = document.getElementById('dd-profit');
     const verdictDiv = document.getElementById('dogdra-verdict');
     const lapText    = laps > 1 ? `${laps}周（計${totalBattles}戦）` : `${totalBattles}戦`;
 
     if (profitPerPerson >= 0) {
-        profitEl.innerHTML   = `<span style="color:#69db7c;">+${Math.floor(profitPerPerson).toLocaleString()} G</span>`;
         verdictDiv.innerHTML = `✅ ${lapText}で1人あたり約 <b>${Math.floor(profitPerPerson).toLocaleString()} G</b> の黒字見込みです`;
         verdictDiv.className = 'result profit';
     } else {
-        profitEl.innerHTML   = `<span style="color:#ff8787;">${Math.floor(profitPerPerson).toLocaleString()} G</span>`;
         verdictDiv.innerHTML = `❌ ${lapText}で1人あたり約 <b>${Math.abs(Math.floor(profitPerPerson)).toLocaleString()} G</b> の赤字見込みです`;
         verdictDiv.className = 'result loss';
     }
