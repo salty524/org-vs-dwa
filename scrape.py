@@ -1,73 +1,527 @@
-import os
-import json
-from datetime import datetime
-import pytz
-import re
-import requests
-from bs4 import BeautifulSoup
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DQX 金策期待値計算</title>
+<style>
+body {
+    font-family: sans-serif;
+    background: #121212;
+    color: #e0e0e0;
+    text-align: center;
+    padding: 20px;
+    margin: 0;
+}
+.card {
+    background: #1e1e1e;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    display: inline-block;
+    max-width: 720px;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+}
+h1 {
+    text-align: center;
+    font-size: 22px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #ffffff;
+}
+.sub-text {
+    text-align: center;
+    color: #aaaaaa;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+/* タブ */
+.tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+.tab-btn {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #3d3d3d;
+    border-radius: 6px;
+    background: #252525;
+    color: #aaaaaa;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+}
+.tab-btn.active {
+    background: #2d2d2d;
+    color: #ffffff;
+    border-color: #888888;
+    font-weight: bold;
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+/* 結果表示 */
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #aaaaaa;
+}
+.result {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin: 0 0 8px 0;
+    padding: 12px;
+    border-radius: 6px;
+}
+.result.orgo {
+    color: #ff8787;
+    background-color: #3d1d1d;
+    border: 1px solid #8c3a3a;
+}
+.result.gata {
+    color: #ffd43b;
+    background-color: #3d3000;
+    border: 1px solid #7c6200;
+}
+.result.even {
+    color: #a9c4d4;
+    background-color: #1a2a33;
+    border: 1px solid #2e4d5e;
+}
+.result.profit {
+    color: #69db7c;
+    background-color: #1b3d22;
+    border: 1px solid #3b7c47;
+}
+.result.loss {
+    color: #ff8787;
+    background-color: #3d1d1d;
+    border: 1px solid #8c3a3a;
+}
+.error-banner {
+    background-color: #3d2a00;
+    border: 1px solid #7c5500;
+    color: #ffd43b;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-bottom: 15px;
+    text-align: center;
+    display: none;
+}
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    background: #252525;
+}
+th, td {
+    border: 1px solid #3d3d3d;
+    padding: 10px;
+    text-align: right;
+}
+th {
+    background-color: #2d2d2d;
+    color: #ffffff;
+    text-align: center;
+    font-size: 14px;
+}
+td { font-size: 15px; }
+td:first-child {
+    text-align: center;
+    font-weight: bold;
+}
+td.error-cell {
+    color: #ff6b6b;
+    font-size: 13px;
+}
+/* ドグドラ用コントロール */
+.dogdra-controls {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.dogdra-controls label {
+    font-size: 13px;
+    color: #aaaaaa;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.dogdra-controls select,
+.dogdra-controls input[type=number] {
+    background: #2d2d2d;
+    border: 1px solid #3d3d3d;
+    color: #e0e0e0;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 14px;
+    width: 70px;
+}
+.dogdra-summary {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+}
+.summary-card {
+    background: #252525;
+    border: 1px solid #3d3d3d;
+    border-radius: 6px;
+    padding: 12px;
+    text-align: center;
+}
+.summary-card .label {
+    font-size: 12px;
+    color: #aaaaaa;
+    margin-bottom: 4px;
+}
+.summary-card .value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+}
+/* 共通 */
+.info-section {
+    margin-top: 30px;
+    border-top: 1px solid #3d3d3d;
+    padding-top: 20px;
+    font-size: 13px;
+    color: #b0b0b0;
+    line-height: 1.6;
+}
+.info-section h2 {
+    font-size: 15px;
+    color: #ffffff;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    border-left: 4px solid #888888;
+    padding-left: 8px;
+}
+.info-section p { margin: 5px 0 10px 0; }
+code {
+    background: #2d2d2d;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #ff922b;
+    font-family: monospace;
+}
+a { color: #aaaaaa; text-decoration: none; }
+a:hover { color: #ffffff; text-decoration: underline; }
+a.hidden-link {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    display: block;
+}
+a.hidden-link:hover { color: inherit; text-decoration: none; }
+.timestamp {
+    text-align: center;
+    font-size: 12px;
+    color: #888888;
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+.credit-footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 12px;
+    color: #888888;
+}
+.credit-footer a, .credit-footer span { margin: 0 3px; }
+@media (max-width: 520px) {
+    body { padding: 10px; }
+    .card { padding: 15px; }
+    h1 { font-size: 18px; }
+    .result { font-size: 15px; padding: 10px; line-height: 1.4; }
+    th { font-size: 11px; padding: 6px 4px; }
+    td { font-size: 12px; padding: 8px 4px; }
+    .dogdra-summary { grid-template-columns: 1fr 1fr 1fr; }
+    .summary-card .value { font-size: 13px; }
+    .info-section { font-size: 12px; }
+    .credit-footer { font-size: 11px; }
+}
+</style>
+</head>
+<body>
+<div class="card">
+    <h1>DQX 金策期待値計算</h1>
+    <p class="sub-text">最新のバザー相場から自動計算します</p>
 
-URLS = {
-    # ふくびき（オーグリード）
-    "fuku_x": "https://dqx-souba.game-blog.app/item/detail/69eb1ee7cf3b22281bbdb0ed",
-    "fuku_y": "https://dqx-souba.game-blog.app/item/detail/6967250f1dc565c0c0137140",
-    "fuku_z": "https://dqx-souba.game-blog.app/item/detail/6848bb617d51a045f9b67f69",
-    # ドグドラ持ち寄り
-    "cell":  "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd4b",
-    "shard": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd4a",
+    <div id="loading" class="loading">データを読み込み中...</div>
+
+    <div id="main-content" style="display:none;">
+        <!-- タブ -->
+        <div class="tabs">
+            <div class="tab-btn active" onclick="switchTab('fukubiki')">🎟 ふくびき比較</div>
+            <div class="tab-btn" onclick="switchTab('dogdra')">🐉 ドグドラ持ち寄り</div>
+        </div>
+
+        <!-- ふくびきタブ -->
+        <div id="tab-fukubiki" class="tab-content active">
+            <div id="fuku-error-banner" class="error-banner">
+                ⚠️ 一部の価格データを取得できませんでした。時間をおいて再度確認してください。
+            </div>
+
+            <div id="fuku-verdict" class="result">─</div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:22%">大陸</th>
+                        <th style="width:20%">1等価格</th>
+                        <th style="width:20%">2等価格</th>
+                        <th style="width:20%">3等価格</th>
+                        <th style="width:18%">期待値/1回</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>オーグリード<br><span style="font-size:11px;color:#aaa;font-weight:normal;">（7日間平均価格）</span></td>
+                        <td id="o1"><a id="o1-link" href="https://dqx-souba.game-blog.app/item/detail/69eb1ee7cf3b22281bbdb0ed" target="_blank" rel="noopener" class="hidden-link">─</a></td>
+                        <td id="o2"><a id="o2-link" href="https://dqx-souba.game-blog.app/item/detail/6967250f1dc565c0c0137140" target="_blank" rel="noopener" class="hidden-link">─</a></td>
+                        <td id="o3"><a id="o3-link" href="https://dqx-souba.game-blog.app/item/detail/6848bb617d51a045f9b67f69" target="_blank" rel="noopener" class="hidden-link">─</a></td>
+                        <td id="o-score">─</td>
+                    </tr>
+                    <tr>
+                        <td>ドワチャッカ<br><span style="font-size:11px;color:#aaa;font-weight:normal;">（店売り価格）</span></td>
+                        <td id="g1">─</td>
+                        <td id="g2">─</td>
+                        <td id="g3">─</td>
+                        <td id="g-score">─</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p class="timestamp">データ最終更新日時: <span id="fuku-update-time">─</span></p>
+
+            <div class="info-section">
+                <h2>計算式について</h2>
+                <p>1〜3等の景品バザー価格をそれぞれ <code>x, y, z</code> とし、ゲーム内通常確率（1等: 0.16% / 2等: 0.24% / 3等: 0.32%）を乗じた <code>0.0016x + 0.0024y + 0.0032z</code> を1回あたりの期待値（1〜3等分のみ）として表示しています。チャンスモード時の確率・4等以下の共通景品は考慮していません。</p>
+                <p>ドワチャッカの景品価格は常に固定（1等: 297,000G / 2等: 150,000G / 3等: 80,000G）のため、期待値は <code>1,091 G</code> で変わりません。これを基準に、オーグリードが <code>x + 1.5y + 2z > 682,000</code> を満たす場合に有利と判定します。上部の100回換算のG差は1回あたりの期待値の差を100倍して算出しています。</p>
+                <h2>データ引用元</h2>
+                <p>オーグリードの相場は <a href="https://dqx-souba.game-blog.app" target="_blank" rel="noopener">DQX相場情報サイト</a> の7日間平均価格を毎日自動取得しています。</p>
+                <h2>面白いダジャレ</h2>
+                <p>ドワチャッカのドア着火・・・ｗ</p>
+            </div>
+        </div>
+
+        <!-- ドグドラタブ -->
+        <div id="tab-dogdra" class="tab-content">
+            <div id="dogdra-error-banner" class="error-banner">
+                ⚠️ 一部の価格データを取得できませんでした。時間をおいて再度確認してください。
+            </div>
+
+            <div class="dogdra-controls">
+                <label>人数
+                    <select id="dogdra-members" onchange="calcDogdra()">
+                        <option value="2">2人</option>
+                        <option value="3">3人</option>
+                        <option value="4" selected>4人</option>
+                    </select>
+                </label>
+                <label>戦数
+                    <input type="number" id="dogdra-battles" value="1" min="1" max="99" onchange="calcDogdra()" oninput="calcDogdra()">
+                </label>
+            </div>
+
+            <div id="dogdra-verdict" class="result">─</div>
+
+            <div class="dogdra-summary">
+                <div class="summary-card">
+                    <div class="label">1人あたりコスト</div>
+                    <div class="value" id="dd-cost">─</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">1人あたり期待報酬</div>
+                    <div class="value" id="dd-reward">─</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">1人あたり期待損益</div>
+                    <div class="value" id="dd-profit">─</div>
+                </div>
+            </div>
+
+            <table style="margin-top:16px;">
+                <thead>
+                    <tr>
+                        <th>アイテム</th>
+                        <th>バザー相場</th>
+                        <th>備考</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:left;">魔因細胞</td>
+                        <td id="dd-cell-price">─</td>
+                        <td style="font-size:12px;color:#aaa;text-align:left;">
+                            <a href="https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd4b" target="_blank" rel="noopener" class="hidden-link" style="display:inline;">相場を見る</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:left;">輝晶の砕片</td>
+                        <td id="dd-shard-price">─</td>
+                        <td style="font-size:12px;color:#aaa;text-align:left;">
+                            <a href="https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd4a" target="_blank" rel="noopener" class="hidden-link" style="display:inline;">相場を見る</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p class="timestamp">データ最終更新日時: <span id="dogdra-update-time">─</span></p>
+
+            <div class="info-section">
+                <h2>計算式について</h2>
+                <p>1戦あたり30個の魔因細胞を人数で割った分が1人のコストです。ドロップは砕片45個（45%）/ 砕片75個（45%）/ 輝晶核1個（10%）の3パターンで、輝晶核は砕片99個換算で計算しています。※ドロップ率は推定</p>
+                <p>1戦あたりの期待砕片数 = <code>0.45×45 + 0.45×75 + 0.10×99 = 63.9個</code>。バザー手数料5%を差し引いた <code>63.9 × 砕片価格 × 0.95</code> が1戦あたりの期待報酬です。</p>
+                <h2>データ引用元</h2>
+                <p>魔因細胞・輝晶の砕片の相場は <a href="https://dqx-souba.game-blog.app" target="_blank" rel="noopener">DQX相場情報サイト</a> の7日間平均価格を毎日自動取得しています。</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="credit-footer">
+    <span>&copy; 2026 tksalt</span>
+    <span>|</span>
+    <a href="https://github.com/salty524/org-vs-dwa" target="_blank" rel="noopener">GitHub</a>
+    <span>|</span>
+    <a href="https://x.com/intent/post?text=DQ10%E9%87%91%E7%AD%96%E3%83%84%E3%83%BC%E3%83%AB%0Ahttps%3A%2F%2Fsalty524.github.io%2Forg-vs-dwa%2F" target="_blank" rel="noopener">Xでシェア</a>
+</div>
+
+<script>
+let globalData = null;
+
+function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', ['fukubiki','dogdra'][i] === name);
+    });
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
 }
 
-def get_7day_average(url):
-    api_key = os.environ.get("SCRAPERAPI_KEY")
-    if not api_key:
-        print("Error: SCRAPERAPI_KEY is not set.")
-        return None
+function calcDogdra() {
+    if (!globalData || !globalData.dogdra) return;
+    const cell  = globalData.dogdra.cell;
+    const shard = globalData.dogdra.shard;
+    if (cell === null || shard === null) return;
 
-    try:
-        proxy_url = f"http://api.scraperapi.com?api_key={api_key}&url={url}"
-        res = requests.get(proxy_url, timeout=30)
-        if res.status_code != 200:
-            print(f"Error: Status code {res.status_code}")
-            return None
+    const members = parseInt(document.getElementById('dogdra-members').value);
+    const battles = parseInt(document.getElementById('dogdra-battles').value) || 1;
 
-        soup = BeautifulSoup(res.text, 'html.parser')
-        for tr in soup.find_all('tr'):
-            tds = tr.find_all('td')
-            if len(tds) >= 2:
-                if '7日' in tds[0].get_text():
-                    price_text = tds[1].get_text().replace(',', '').replace('G', '').strip()
-                    if price_text.isdigit():
-                        return int(price_text)
+    const costPerPerson  = (30 / members) * cell * battles;
+    const rewardPerBattle = 63.9 * shard * 0.95;
+    const rewardPerPerson = rewardPerBattle * battles;
+    const profitPerPerson = rewardPerPerson - costPerPerson;
 
-        page_text = soup.get_text()
-        match = re.search(r'7日(?:間の)?平均.*?([\d,]+)', page_text)
-        if match:
-            return int(match.group(1).replace(',', ''))
+    document.getElementById('dd-cost').innerText   = Math.floor(costPerPerson).toLocaleString() + ' G';
+    document.getElementById('dd-reward').innerText = Math.floor(rewardPerPerson).toLocaleString() + ' G';
 
-    except Exception as e:
-        print(f"Exception: {e}")
+    const profitEl = document.getElementById('dd-profit');
+    const verdictDiv = document.getElementById('dogdra-verdict');
 
-    return None
-
-def main():
-    price_fuku_x = get_7day_average(URLS["fuku_x"])
-    price_fuku_y = get_7day_average(URLS["fuku_y"])
-    price_fuku_z = get_7day_average(URLS["fuku_z"])
-    price_cell   = get_7day_average(URLS["cell"])
-    price_shard  = get_7day_average(URLS["shard"])
-
-    prices = {
-        "updated_at": datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S'),
-        "aucland": {"x": price_fuku_x, "y": price_fuku_y, "z": price_fuku_z},
-        "dwacha":  {"x": 297000, "y": 150000, "z": 80000},
-        "dogdra":  {"cell": price_cell, "shard": price_shard}
+    if (profitPerPerson >= 0) {
+        profitEl.innerHTML = `<span style="color:#69db7c;">+${Math.floor(profitPerPerson).toLocaleString()} G</span>`;
+        verdictDiv.innerHTML = `✅ ${battles}戦で1人あたり約 <b>${Math.floor(profitPerPerson).toLocaleString()} G</b> の黒字見込みです`;
+        verdictDiv.className = 'result profit';
+    } else {
+        profitEl.innerHTML = `<span style="color:#ff8787;">${Math.floor(profitPerPerson).toLocaleString()} G</span>`;
+        verdictDiv.innerHTML = `❌ ${battles}戦で1人あたり約 <b>${Math.abs(Math.floor(profitPerPerson)).toLocaleString()} G</b> の赤字見込みです`;
+        verdictDiv.className = 'result loss';
     }
+}
 
-    with open('data.json', 'w', encoding='utf-8') as f:
-        json.dump(prices, f, indent=4, ensure_ascii=False)
+fetch('./data.json', { cache: 'no-store' })
+    .then(r => r.json())
+    .then(data => {
+        globalData = data;
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
 
-    def fmt(v): return f"{v:,}" if v is not None else "取得失敗"
-    print(f"ふくびき: 1等={fmt(price_fuku_x)}, 2等={fmt(price_fuku_y)}, 3等={fmt(price_fuku_z)}")
-    print(f"ドグドラ: 魔因細胞={fmt(price_cell)}, 輝晶の砕片={fmt(price_shard)}")
+        // 更新日時
+        document.getElementById('fuku-update-time').innerText    = data.updated_at;
+        document.getElementById('dogdra-update-time').innerText  = data.updated_at;
 
-if __name__ == "__main__":
-    main()
+        // ── ふくびき ──
+        const o1 = data.aucland.x, o2 = data.aucland.y, o3 = data.aucland.z;
+        const g1 = data.dwacha.x,  g2 = data.dwacha.y,  g3 = data.dwacha.z;
+        const hasError = (o1 === null || o2 === null || o3 === null);
+        if (hasError) document.getElementById('fuku-error-banner').style.display = 'block';
+
+        function formatCell(id, val) {
+            const el   = document.getElementById(id);
+            const link = document.getElementById(id + '-link');
+            if (val === null) {
+                if (link) link.innerText = '取得失敗';
+                else el.innerText = '取得失敗';
+                el.classList.add('error-cell');
+            } else {
+                const txt = val.toLocaleString() + ' G';
+                if (link) link.innerText = txt;
+                else el.innerText = txt;
+            }
+        }
+
+        formatCell('o1', o1); formatCell('o2', o2); formatCell('o3', o3);
+        document.getElementById('g1').innerText = g1.toLocaleString() + ' G';
+        document.getElementById('g2').innerText = g2.toLocaleString() + ' G';
+        document.getElementById('g3').innerText = g3.toLocaleString() + ' G';
+
+        const verdictDiv = document.getElementById('fuku-verdict');
+        if (hasError) {
+            verdictDiv.innerText   = '⚠️ データ取得失敗のため判定できません';
+            verdictDiv.className   = 'result even';
+            document.getElementById('o-score').innerText = '─';
+            document.getElementById('g-score').innerText = '─';
+        } else {
+            const oScore = o1 + 1.5*o2 + 2*o3;
+            const gScore = g1 + 1.5*g2 + 2*g3;
+            const oEV = Math.floor(0.0016*o1 + 0.0024*o2 + 0.0032*o3);
+            const gEV = Math.floor(0.0016*g1 + 0.0024*g2 + 0.0032*g3);
+            const diff = Math.abs(gEV - oEV) * 100;
+
+            document.getElementById('o-score').innerHTML = oEV > gEV
+                ? `<b style="color:#ffd43b;">${oEV.toLocaleString()} G</b>` : `${oEV.toLocaleString()} G`;
+            document.getElementById('g-score').innerHTML = gEV > oEV
+                ? `<b style="color:#ffd43b;">${gEV.toLocaleString()} G</b>` : `${gEV.toLocaleString()} G`;
+
+            if (oScore > gScore && diff >= 5000) {
+                verdictDiv.innerHTML  = `🔥 現在は「オーグリード大陸」で引くのがお得です<br><span style="font-size:14px;font-weight:normal;color:#aaa;">ドワチャッカより <b>約${diff.toLocaleString()} G</b> お得（100回換算）</span>`;
+                verdictDiv.className  = 'result orgo';
+            } else if (gScore > oScore && diff >= 5000) {
+                verdictDiv.innerHTML  = `💎 現在は「ドワチャッカ大陸」で引くのがお得です<br><span style="font-size:14px;font-weight:normal;color:#aaa;">オーグリードより <b>約${diff.toLocaleString()} G</b> お得（100回換算）</span>`;
+                verdictDiv.className  = 'result gata';
+            } else {
+                const leader = oScore > gScore ? 'オーグリードの方が' : 'ドワチャッカの方が';
+                verdictDiv.innerHTML  = `⚖️ 両大陸の期待値は現在ほぼ同等です<br><span style="font-size:14px;font-weight:normal;color:#aaa;">${leader} <b>約${diff.toLocaleString()} G</b> だけお得（100回換算）</span>`;
+                verdictDiv.className  = 'result even';
+            }
+        }
+
+        // ── ドグドラ ──
+        const cell  = data.dogdra ? data.dogdra.cell  : null;
+        const shard = data.dogdra ? data.dogdra.shard : null;
+        const hasDogdraError = (cell === null || shard === null);
+        if (hasDogdraError) {
+            document.getElementById('dogdra-error-banner').style.display = 'block';
+            document.getElementById('dogdra-verdict').innerText = '⚠️ データ取得失敗のため計算できません';
+            document.getElementById('dogdra-verdict').className = 'result even';
+        } else {
+            document.getElementById('dd-cell-price').innerText  = cell.toLocaleString()  + ' G';
+            document.getElementById('dd-shard-price').innerText = shard.toLocaleString() + ' G';
+            calcDogdra();
+        }
+    })
+    .catch(err => {
+        document.getElementById('loading').innerText = 'データの読み込みに失敗しました。';
+        console.error(err);
+    });
+</script>
+</body>
+</html>
