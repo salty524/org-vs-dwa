@@ -7,9 +7,13 @@ import requests
 from bs4 import BeautifulSoup
 
 URLS = {
-    "x": "https://dqx-souba.game-blog.app/item/detail/69eb1ee7cf3b22281bbdb0ed",
-    "y": "https://dqx-souba.game-blog.app/item/detail/6967250f1dc565c0c0137140",
-    "z": "https://dqx-souba.game-blog.app/item/detail/6848bb617d51a045f9b67f69"
+    # ふくびき（オーグリード）
+    "fuku_x": "https://dqx-souba.game-blog.app/item/detail/69eb1ee7cf3b22281bbdb0ed",
+    "fuku_y": "https://dqx-souba.game-blog.app/item/detail/6967250f1dc565c0c0137140",
+    "fuku_z": "https://dqx-souba.game-blog.app/item/detail/6848bb617d51a045f9b67f69",
+    # ドグドラ持ち寄り
+    "cell":  "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd4b",
+    "shard": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd4a",
 }
 
 def get_7day_average(url):
@@ -45,24 +49,25 @@ def get_7day_average(url):
     return None
 
 def main():
-    price_x = get_7day_average(URLS["x"])
-    price_y = get_7day_average(URLS["y"])
-    price_z = get_7day_average(URLS["z"])
+    price_fuku_x = get_7day_average(URLS["fuku_x"])
+    price_fuku_y = get_7day_average(URLS["fuku_y"])
+    price_fuku_z = get_7day_average(URLS["fuku_z"])
+    price_cell   = get_7day_average(URLS["cell"])
+    price_shard  = get_7day_average(URLS["shard"])
 
-    # スクレイプ失敗時は null を入れる（ハードコードのフォールバックなし）
     prices = {
         "updated_at": datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S'),
-        "aucland": {"x": price_x, "y": price_y, "z": price_z},
-        "dwacha": {"x": 297000, "y": 150000, "z": 80000}
+        "aucland": {"x": price_fuku_x, "y": price_fuku_y, "z": price_fuku_z},
+        "dwacha":  {"x": 297000, "y": 150000, "z": 80000},
+        "dogdra":  {"cell": price_cell, "shard": price_shard}
     }
 
     with open('data.json', 'w', encoding='utf-8') as f:
         json.dump(prices, f, indent=4, ensure_ascii=False)
 
-    status_x = f"{price_x:,}" if price_x is not None else "取得失敗"
-    status_y = f"{price_y:,}" if price_y is not None else "取得失敗"
-    status_z = f"{price_z:,}" if price_z is not None else "取得失敗"
-    print(f"Data update completed. (1等: {status_x}, 2等: {status_y}, 3等: {status_z})")
+    def fmt(v): return f"{v:,}" if v is not None else "取得失敗"
+    print(f"ふくびき: 1等={fmt(price_fuku_x)}, 2等={fmt(price_fuku_y)}, 3等={fmt(price_fuku_z)}")
+    print(f"ドグドラ: 魔因細胞={fmt(price_cell)}, 輝晶の砕片={fmt(price_shard)}")
 
 if __name__ == "__main__":
     main()
