@@ -253,7 +253,6 @@ a.hidden-link:hover { color: inherit; text-decoration: none; }
 <body>
 <div class="card">
     <h1>DQX 金策期待値計算</h1>
-    <p class="sub-text">最新のバザー相場から自動計算します</p>
 
     <div id="loading" class="loading">データを読み込み中...</div>
 
@@ -320,17 +319,7 @@ a.hidden-link:hover { color: inherit; text-decoration: none; }
             </div>
 
             <div class="dogdra-controls">
-                <label>人数
-                    <select id="dogdra-members" onchange="calcDogdra()">
-                        <option value="2">2人</option>
-                        <option value="3">3人</option>
-                        <option value="4" selected>4人</option>
-                    </select>
-                </label>
-                <label>戦数/周
-                    <input type="number" id="dogdra-battles" value="4" min="1" max="99" onchange="calcDogdra()" oninput="calcDogdra()">
-                </label>
-                <label>周数
+                <label>周数（1周あたり4人で4戦）
                     <input type="number" id="dogdra-laps" value="1" min="1" max="99" onchange="calcDogdra()" oninput="calcDogdra()">
                 </label>
             </div>
@@ -355,9 +344,9 @@ a.hidden-link:hover { color: inherit; text-decoration: none; }
             <table style="margin-top:16px;">
                 <thead>
                     <tr>
-                        <th style="width:28%">アイテム</th>
-                        <th style="width:25%">バザー相場</th>
-                        <th style="width:47%">備考</th>
+                        <th style="width:20%">アイテム</th>
+                        <th style="width:40%">バザー相場</th>
+                        <th style="width:40%">備考</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -378,8 +367,8 @@ a.hidden-link:hover { color: inherit; text-decoration: none; }
 
             <div class="info-section">
                 <h2>計算式について</h2>
-                <p>1戦あたり30個の魔因細胞を人数で割った分が1人のコストです。ドロップは砕片45個（45%）/ 砕片75個（45%）/ 輝晶核1個（10%）の3パターンで、輝晶核は砕片99個換算で計算しています。※確率は推定</p>
-                <p>1戦あたりの期待砕片数 = <code>0.45×45 + 0.45×75 + 0.10×99 = 63.9個</code>。バザー手数料5%を差し引いた <code>63.9 × 砕片価格 × 0.95</code> が1戦あたりの期待報酬です。</p>
+                <p>4人持ち寄りで1周4戦を前提としています。1人あたり魔因細胞30個／周が持ち寄りコストです。ドロップは砕片45個（45%）/ 砕片75個（45%）/ 輝晶核1個（10%）の3パターンで、輝晶核は砕片99個換算で計算しています。※確率は推定</p>
+                <p>1戦あたりの期待砕片数 = <code>0.45×45 + 0.45×75 + 0.10×99 = 63.9個</code>。バザー手数料5%を差し引いた <code>63.9 × 砕片価格 × 0.95 × 4戦</code> が1周あたりの期待報酬です。</p>
                 <h2>データ引用元</h2>
                 <p>魔因細胞・輝晶の砕片の相場は <a href="https://dqx-souba.game-blog.app" target="_blank" rel="noopener">DQX相場情報サイト</a> の7日間平均価格を毎日自動取得しています。</p>
             </div>
@@ -412,29 +401,28 @@ function calcDogdra() {
     const shard = globalData.dogdra.shard;
     if (cell === null || shard === null) return;
 
-    const members = parseInt(document.getElementById('dogdra-members').value);
-    const battles = parseInt(document.getElementById('dogdra-battles').value) || 1;
-    const laps    = parseInt(document.getElementById('dogdra-laps').value) || 1;
-    const totalBattles = battles * laps;
+    const laps = parseInt(document.getElementById('dogdra-laps').value) || 1;
+    const totalBattles = 4 * laps;
 
-    const costPerPerson   = (30 / members) * cell * totalBattles;
-    const rewardPerBattle = 63.9 * shard * 0.95;
-    const rewardPerPerson = rewardPerBattle * totalBattles;
+    // 1人あたりコスト: 30個/周 × 周数
+    const costPerPerson   = 30 * cell * laps;
+    // 1戦あたり期待報酬 × 4戦 × 周数
+    const rewardPerPerson = 63.9 * shard * 0.95 * totalBattles;
     const profitPerPerson = rewardPerPerson - costPerPerson;
 
     document.getElementById('dd-cost').innerText   = Math.floor(costPerPerson).toLocaleString() + ' G';
     document.getElementById('dd-reward').innerText = Math.floor(rewardPerPerson).toLocaleString() + ' G';
 
-    const profitEl = document.getElementById('dd-profit');
+    const profitEl   = document.getElementById('dd-profit');
     const verdictDiv = document.getElementById('dogdra-verdict');
-    const lapText = laps > 1 ? `${laps}周（計${totalBattles}戦）` : `${totalBattles}戦`;
+    const lapText    = laps > 1 ? `${laps}周（計${totalBattles}戦）` : `${totalBattles}戦`;
 
     if (profitPerPerson >= 0) {
-        profitEl.innerHTML = `<span style="color:#69db7c;">+${Math.floor(profitPerPerson).toLocaleString()} G</span>`;
+        profitEl.innerHTML   = `<span style="color:#69db7c;">+${Math.floor(profitPerPerson).toLocaleString()} G</span>`;
         verdictDiv.innerHTML = `✅ ${lapText}で1人あたり約 <b>${Math.floor(profitPerPerson).toLocaleString()} G</b> の黒字見込みです`;
         verdictDiv.className = 'result profit';
     } else {
-        profitEl.innerHTML = `<span style="color:#ff8787;">${Math.floor(profitPerPerson).toLocaleString()} G</span>`;
+        profitEl.innerHTML   = `<span style="color:#ff8787;">${Math.floor(profitPerPerson).toLocaleString()} G</span>`;
         verdictDiv.innerHTML = `❌ ${lapText}で1人あたり約 <b>${Math.abs(Math.floor(profitPerPerson)).toLocaleString()} G</b> の赤字見込みです`;
         verdictDiv.className = 'result loss';
     }
@@ -447,9 +435,8 @@ fetch('./data.json', { cache: 'no-store' })
         document.getElementById('loading').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
 
-        // 更新日時
-        document.getElementById('fuku-update-time').innerText    = data.updated_at;
-        document.getElementById('dogdra-update-time').innerText  = data.updated_at;
+        document.getElementById('fuku-update-time').innerText   = data.updated_at;
+        document.getElementById('dogdra-update-time').innerText = data.updated_at;
 
         // ── ふくびき ──
         const o1 = data.aucland.x, o2 = data.aucland.y, o3 = data.aucland.z;
@@ -478,8 +465,8 @@ fetch('./data.json', { cache: 'no-store' })
 
         const verdictDiv = document.getElementById('fuku-verdict');
         if (hasError) {
-            verdictDiv.innerText   = '⚠️ データ取得失敗のため判定できません';
-            verdictDiv.className   = 'result even';
+            verdictDiv.innerText = '⚠️ データ取得失敗のため判定できません';
+            verdictDiv.className = 'result even';
             document.getElementById('o-score').innerText = '─';
             document.getElementById('g-score').innerText = '─';
         } else {
@@ -495,15 +482,15 @@ fetch('./data.json', { cache: 'no-store' })
                 ? `<b style="color:#ffd43b;">${gEV.toLocaleString()} G</b>` : `${gEV.toLocaleString()} G`;
 
             if (oScore > gScore && diff >= 5000) {
-                verdictDiv.innerHTML  = `🔥 現在は「オーグリード大陸」で引くのがお得です<br><span style="font-size:14px;font-weight:normal;color:#aaa;">ドワチャッカより <b>約${diff.toLocaleString()} G</b> お得（100回換算）</span>`;
-                verdictDiv.className  = 'result orgo';
+                verdictDiv.innerHTML = `🔥 現在は「オーグリード大陸」で引くのがお得です<br><span style="font-size:14px;font-weight:normal;color:#aaa;">ドワチャッカより <b>約${diff.toLocaleString()} G</b> お得（100回換算）</span>`;
+                verdictDiv.className = 'result orgo';
             } else if (gScore > oScore && diff >= 5000) {
-                verdictDiv.innerHTML  = `💎 現在は「ドワチャッカ大陸」で引くのがお得です<br><span style="font-size:14px;font-weight:normal;color:#aaa;">オーグリードより <b>約${diff.toLocaleString()} G</b> お得（100回換算）</span>`;
-                verdictDiv.className  = 'result gata';
+                verdictDiv.innerHTML = `💎 現在は「ドワチャッカ大陸」で引くのがお得です<br><span style="font-size:14px;font-weight:normal;color:#aaa;">オーグリードより <b>約${diff.toLocaleString()} G</b> お得（100回換算）</span>`;
+                verdictDiv.className = 'result gata';
             } else {
                 const leader = oScore > gScore ? 'オーグリードの方が' : 'ドワチャッカの方が';
-                verdictDiv.innerHTML  = `⚖️ 両大陸の期待値は現在ほぼ同等です<br><span style="font-size:14px;font-weight:normal;color:#aaa;">${leader} <b>約${diff.toLocaleString()} G</b> だけお得（100回換算）</span>`;
-                verdictDiv.className  = 'result even';
+                verdictDiv.innerHTML = `⚖️ 両大陸の期待値は現在ほぼ同等です<br><span style="font-size:14px;font-weight:normal;color:#aaa;">${leader} <b>約${diff.toLocaleString()} G</b> だけお得（100回換算）</span>`;
+                verdictDiv.className = 'result even';
             }
         }
 
@@ -516,8 +503,8 @@ fetch('./data.json', { cache: 'no-store' })
             document.getElementById('dogdra-verdict').innerText = '⚠️ データ取得失敗のため計算できません';
             document.getElementById('dogdra-verdict').className = 'result even';
         } else {
-            document.getElementById('dd-cell-link').innerText  = cell.toLocaleString()  + ' G';
-            document.getElementById('dd-shard-link').innerText = shard.toLocaleString() + ' G';
+            document.getElementById('dd-cell-link').innerText   = cell.toLocaleString()  + ' G';
+            document.getElementById('dd-shard-link').innerText  = shard.toLocaleString() + ' G';
             document.getElementById('dd-cell-total').innerText  = `30個 = ${(cell * 30).toLocaleString()} G`;
             document.getElementById('dd-shard-total').innerText = `99個 = ${(shard * 99).toLocaleString()} G`;
             calcDogdra();
