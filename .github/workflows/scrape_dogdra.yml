@@ -1,82 +1,30 @@
-import os
-import json
-from datetime import datetime
-import pytz
-import re
-import requests
-from bs4 import BeautifulSoup
-
-URLS = {
-    "cell":  "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd4b",
-    "shard": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd4a",
-}
-
-def get_7day_average(url):
-    api_key = os.environ.get("SCRAPERAPI_KEY")
-    if not api_key:
-        print("Error: SCRAPERAPI_KEY is not set.")
-        return None
-    try:
-        proxy_url = f"http://api.scraperapi.com?api_key={api_key}&url={url}"
-        res = requests.get(proxy_url, timeout=30)
-        if res.status_code != 200:
-            print(f"Error: Status code {res.status_code}")
-            return None
-        soup = BeautifulSoup(res.text, 'html.parser')
-        for tr in soup.find_all('tr'):
-            tds = tr.find_all('td')
-            if len(tds) >= 2:
-                if '7日' in tds[0].get_text():
-                    price_text = tds[1].get_text().replace(',', '').replace('G', '').strip()
-                    if price_text.isdigit():
-                        return int(price_text)
-        page_text = soup.get_text()
-        match = re.search(r'7日(?:間の)?平均.*?([\d,]+)', page_text)
-        if match:
-            return int(match.group(1).replace(',', ''))
-    except Exception as e:
-        print(f"Exception: {e}")
-    return None
-
-def main():
-    # 既存データを読み込む
-    existing = {}
-    try:
-        with open('data.json', 'r', encoding='utf-8') as f:
-            existing = json.load(f)
-    except Exception:
-        pass
-
-    prev = existing.get('dogdra', {}) or {}
-
-    price_cell  = get_7day_average(URLS["cell"])
-    price_shard = get_7day_average(URLS["shard"])
-
-    # 失敗した項目は前回値を維持
-    final_cell  = price_cell  if price_cell  is not None else prev.get('cell')
-    final_shard = price_shard if price_shard is not None else prev.get('shard')
-
-    # 失敗項目を記録
-    failed = []
-    if price_cell  is None: failed.append('魔因細胞')
-    if price_shard is None: failed.append('輝晶の砕片')
-
-    now = datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S')
-    dogdra_updated_at = now if not failed else f"{now}（取得失敗: {', '.join(failed)}）"
-
-    existing['dogdra'] = {
-        "cell":       final_cell,
-        "shard":      final_shard,
-        "updated_at": dogdra_updated_at
-    }
-
-    with open('data.json', 'w', encoding='utf-8') as f:
-        json.dump(existing, f, indent=4, ensure_ascii=False)
-
-    def fmt(v): return f"{v:,}" if v is not None else "取得失敗"
-    print(f"ドグドラ更新完了: 魔因細胞={fmt(final_cell)}, 輝晶の砕片={fmt(final_shard)}")
-    if failed:
-        print(f"警告: {', '.join(failed)} の取得に失敗。前回値を維持しました。")
-
-if __name__ == "__main__":
-    main()
+name: Dogdra Price Scraper
+on:
+  workflow_dispatch:
+jobs:
+  scrape-dogdra:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+    steps:
+    - name: チェックアウト
+      uses: actions/checkout@v4
+    - name: Pythonの準備
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    - name: 必要なライブラリを入れる
+      run: |
+        pip install requests beautifulsoup4 pytz
+    - name: ドグドラスクレイピング実行
+      env:
+        SCRAPERAPI_KEY: ${{ secrets.SCRAPERAPI_KEY }}
+      run: python scrape_dogdra.py
+    - name: 更新されたデータをGitHubに保存（コミット）
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add data.json
+        git diff --cached --quiet || (git commit -m "Updated dogdra prices" && git push)
