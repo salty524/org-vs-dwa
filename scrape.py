@@ -40,31 +40,48 @@ def get_7day_average(url):
     return None
 
 def main():
+    # 既存データを読み込む
+    existing = {}
+    try:
+        with open('data.json', 'r', encoding='utf-8') as f:
+            existing = json.load(f)
+    except Exception:
+        pass
+
+    prev = existing.get('aucland', {})
+
     price_x = get_7day_average(URLS["fuku_x"])
     price_y = get_7day_average(URLS["fuku_y"])
     price_z = get_7day_average(URLS["fuku_z"])
 
-    # 既存のdata.jsonを読み込んでdogdraセクションを保持する
-    existing_dogdra = None
-    try:
-        with open('data.json', 'r', encoding='utf-8') as f:
-            existing = json.load(f)
-            existing_dogdra = existing.get('dogdra')
-    except Exception:
-        pass
+    # 失敗した項目は前回値を維持
+    final_x = price_x if price_x is not None else prev.get('x')
+    final_y = price_y if price_y is not None else prev.get('y')
+    final_z = price_z if price_z is not None else prev.get('z')
 
-    prices = {
-        "updated_at": datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S'),
-        "aucland": {"x": price_x, "y": price_y, "z": price_z},
+    # 失敗項目を記録
+    failed = []
+    if price_x is None: failed.append('1等')
+    if price_y is None: failed.append('2等')
+    if price_z is None: failed.append('3等')
+
+    now = datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S')
+    updated_at = now if not failed else f"{now}（取得失敗: {', '.join(failed)}）"
+
+    data = {
+        "updated_at": updated_at,
+        "aucland": {"x": final_x, "y": final_y, "z": final_z},
         "dwacha":  {"x": 297000, "y": 150000, "z": 80000},
-        "dogdra":  existing_dogdra
+        "dogdra":  existing.get('dogdra')
     }
 
     with open('data.json', 'w', encoding='utf-8') as f:
-        json.dump(prices, f, indent=4, ensure_ascii=False)
+        json.dump(data, f, indent=4, ensure_ascii=False)
 
     def fmt(v): return f"{v:,}" if v is not None else "取得失敗"
-    print(f"ふくびき更新完了: 1等={fmt(price_x)}, 2等={fmt(price_y)}, 3等={fmt(price_z)}")
+    print(f"ふくびき更新完了: 1等={fmt(final_x)}, 2等={fmt(final_y)}, 3等={fmt(final_z)}")
+    if failed:
+        print(f"警告: {', '.join(failed)} の取得に失敗。前回値を維持しました。")
 
 if __name__ == "__main__":
     main()
