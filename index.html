@@ -401,9 +401,7 @@ function calcDogdra() {
     const laps = parseInt(document.getElementById('dogdra-laps').value) || 1;
     const totalBattles = 4 * laps;
 
-    // 1人あたりコスト: 30個/周 × 周数
     const costPerPerson   = 30 * cell * laps;
-    // 1戦あたり期待報酬 × 4戦 × 周数
     const rewardPerPerson = 63.9 * shard * 0.95 * totalBattles;
     const profitPerPerson = rewardPerPerson - costPerPerson;
 
@@ -430,7 +428,7 @@ fetch('./data.json', { cache: 'no-store' })
         document.getElementById('main-content').style.display = 'block';
 
         document.getElementById('fuku-update-time').innerText   = data.updated_at;
-        document.getElementById('dogdra-update-time').innerText = data.updated_at;
+        document.getElementById('dogdra-update-time').innerText = (data.dogdra && data.dogdra.updated_at) ? data.dogdra.updated_at : data.updated_at;
 
         // ── ふくびき ──
         const o1 = data.aucland.x, o2 = data.aucland.y, o3 = data.aucland.z;
