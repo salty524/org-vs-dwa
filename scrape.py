@@ -12,16 +12,17 @@ URLS = {
     "fuku_z": "https://dqx-souba.game-blog.app/item/detail/6848bb617d51a045f9b67f69",
 }
 
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xhtml,*/*;q=0.9",
+    "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+}
+
 def get_7day_average(url):
-    api_key = os.environ.get("SCRAPERAPI_KEY")
-    if not api_key:
-        print("Error: SCRAPERAPI_KEY is not set.")
-        return None
     try:
-        proxy_url = f"http://api.scraperapi.com?api_key={api_key}&url={url}"
-        res = requests.get(proxy_url, timeout=30)
+        res = requests.get(url, headers=HEADERS, timeout=30)
         if res.status_code != 200:
-            print(f"Error: Status code {res.status_code}")
+            print(f"Error: Status code {res.status_code} for {url}")
             return None
         soup = BeautifulSoup(res.text, 'html.parser')
         for tr in soup.find_all('tr'):
@@ -40,7 +41,6 @@ def get_7day_average(url):
     return None
 
 def main():
-    # 既存データを読み込む
     existing = {}
     try:
         with open('data.json', 'r', encoding='utf-8') as f:
@@ -54,12 +54,10 @@ def main():
     price_y = get_7day_average(URLS["fuku_y"])
     price_z = get_7day_average(URLS["fuku_z"])
 
-    # 失敗した項目は前回値を維持
     final_x = price_x if price_x is not None else prev.get('x')
     final_y = price_y if price_y is not None else prev.get('y')
     final_z = price_z if price_z is not None else prev.get('z')
 
-    # 失敗項目を記録
     failed = []
     if price_x is None: failed.append('1等')
     if price_y is None: failed.append('2等')
