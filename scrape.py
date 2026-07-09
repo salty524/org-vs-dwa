@@ -1,4 +1,3 @@
-import os
 import json
 from datetime import datetime
 import pytz
@@ -12,14 +11,15 @@ URLS = {
     "fuku_z": "https://dqx-souba.game-blog.app/item/detail/6848bb617d51a045f9b67f69",
 }
 
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xhtml,*/*;q=0.9",
+    "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+}
+
 def get_7day_average(url):
-    api_key = os.environ.get("SCRAPERAPI_KEY")
-    if not api_key:
-        print("Error: SCRAPERAPI_KEY is not set.")
-        return None
     try:
-        proxy_url = f"http://api.scraperapi.com?api_key={api_key}&url={url}"
-        res = requests.get(proxy_url, timeout=30)
+        res = requests.get(url, headers=HEADERS, timeout=30)
         if res.status_code != 200:
             print(f"Error: Status code {res.status_code} for {url}")
             return None
