@@ -1,37 +1,25 @@
 name: Auto Price Scraper
-
 on:
-#  schedule:
-#    - cron: '30 21,9 * * *'
   workflow_dispatch:
-
 jobs:
   scrape-and-update:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
-
     steps:
     - name: チェックアウト
       uses: actions/checkout@v4
-
     - name: Pythonの準備
       uses: actions/setup-python@v5
       with:
         python-version: '3.10'
-
     - name: 必要なライブラリを入れる
       run: |
-        pip install requests beautifulsoup4 pytz
-
+        pip install playwright beautifulsoup4 pytz
+        playwright install chromium
+        playwright install-deps chromium
     - name: スクレイピング実行
-      env:
-        SCRAPERAPI_KEY: ${{ secrets.SCRAPERAPI_KEY }}
       run: python scrape.py
-
     - name: 更新されたデータをGitHubに保存（コミット）
       run: |
         git config --local user.email "action@github.com"
