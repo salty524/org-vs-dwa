@@ -11,16 +11,17 @@ URLS = {
     "shard": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd4a",
 }
 
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xhtml,*/*;q=0.9",
+    "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+}
+
 def get_7day_average(url):
-    api_key = os.environ.get("SCRAPERAPI_KEY")
-    if not api_key:
-        print("Error: SCRAPERAPI_KEY is not set.")
-        return None
     try:
-        proxy_url = f"http://api.scraperapi.com?api_key={api_key}&url={url}"
-        res = requests.get(proxy_url, timeout=30)
+        res = requests.get(url, headers=HEADERS, timeout=30)
         if res.status_code != 200:
-            print(f"Error: Status code {res.status_code}")
+            print(f"Error: Status code {res.status_code} for {url}")
             return None
         soup = BeautifulSoup(res.text, 'html.parser')
         for tr in soup.find_all('tr'):
@@ -39,23 +40,41 @@ def get_7day_average(url):
     return None
 
 def main():
+    existing = {}
+    try:
+        with open('data.json', 'r', encoding='utf-8') as f:
+            existing = json.load(f)
+    except Exception:
+        pass
+
+    prev = existing.get('dogdra', {}) or {}
+
     price_cell  = get_7day_average(URLS["cell"])
     price_shard = get_7day_average(URLS["shard"])
 
-    # 既存のdata.jsonを読み込んでdogdraセクションだけ上書き
-    try:
-        with open('data.json', 'r', encoding='utf-8') as f:
-            data = json.load(f)
-    except Exception:
-        data = {}
+    final_cell  = price_cell  if price_cell  is not None else prev.get('cell')
+    final_shard = price_shard if price_shard is not None else prev.get('shard')
 
-    data['dogdra'] = {"cell": price_cell, "shard": price_shard}
+    failed = []
+    if price_cell  is None: failed.append('魔因細胞')
+    if price_shard is None: failed.append('輝晶の砕片')
+
+    now = datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S')
+    dogdra_updated_at = now if not failed else f"{now}（取得失敗: {', '.join(failed)}）"
+
+    existing['dogdra'] = {
+        "cell":       final_cell,
+        "shard":      final_shard,
+        "updated_at": dogdra_updated_at
+    }
 
     with open('data.json', 'w', encoding='utf-8') as f:
-        json.dump(data, f, indent=4, ensure_ascii=False)
+        json.dump(existing, f, indent=4, ensure_ascii=False)
 
     def fmt(v): return f"{v:,}" if v is not None else "取得失敗"
-    print(f"ドグドラ更新完了: 魔因細胞={fmt(price_cell)}, 輝晶の砕片={fmt(price_shard)}")
+    print(f"ドグドラ更新完了: 魔因細胞={fmt(final_cell)}, 輝晶の砕片={fmt(final_shard)}")
+    if failed:
+        print(f"警告: {', '.join(failed)} の取得に失敗。前回値を維持しました。")
 
 if __name__ == "__main__":
     main()
