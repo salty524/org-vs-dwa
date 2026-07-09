@@ -1,40 +1,29 @@
-import os
 import json
 from datetime import datetime
 import pytz
 import re
-import requests
-from bs4 import BeautifulSoup
+from playwright.sync_api import sync_playwright
 
 URLS = {
     "cell":  "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd4b",
     "shard": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd4a",
 }
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    "Accept": "text/html,application/xhtml+xml,application/xhtml,*/*;q=0.9",
-    "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
-}
-
-def get_7day_average(url):
+def get_7day_average(page, url):
     try:
-        res = requests.get(url, headers=HEADERS, timeout=30)
-        if res.status_code != 200:
-            print(f"Error: Status code {res.status_code} for {url}")
-            return None
-        soup = BeautifulSoup(res.text, 'html.parser')
-        for tr in soup.find_all('tr'):
-            tds = tr.find_all('td')
-            if len(tds) >= 2:
-                if '7日' in tds[0].get_text():
-                    price_text = tds[1].get_text().replace(',', '').replace('G', '').strip()
+        page.goto(url, wait_until="networkidle", timeout=30000)
+        rows = page.query_selector_all("tr")
+        for row in rows:
+            cells = row.query_selector_all("td")
+            if len(cells) >= 2:
+                if "7日" in cells[0].inner_text():
+                    price_text = cells[1].inner_text().replace(",", "").replace("G", "").strip()
                     if price_text.isdigit():
                         return int(price_text)
-        page_text = soup.get_text()
+        page_text = page.inner_text("body")
         match = re.search(r'7日(?:間の)?平均.*?([\d,]+)', page_text)
         if match:
-            return int(match.group(1).replace(',', ''))
+            return int(match.group(1).replace(",", ""))
     except Exception as e:
         print(f"Exception: {e}")
     return None
@@ -49,8 +38,12 @@ def main():
 
     prev = existing.get('dogdra', {}) or {}
 
-    price_cell  = get_7day_average(URLS["cell"])
-    price_shard = get_7day_average(URLS["shard"])
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        price_cell  = get_7day_average(page, URLS["cell"])
+        price_shard = get_7day_average(page, URLS["shard"])
+        browser.close()
 
     final_cell  = price_cell  if price_cell  is not None else prev.get('cell')
     final_shard = price_shard if price_shard is not None else prev.get('shard')
