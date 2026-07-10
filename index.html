@@ -468,10 +468,10 @@ function calcDogdra() {
     const lapText    = laps > 1 ? `${laps}周（計${totalBattles}戦）` : `${totalBattles}戦`;
 
     if (profitPerPerson >= 0) {
-        verdictDiv.innerHTML = `✅ ${lapText}で1人あたり約 <b>${Math.floor(profitPerPerson).toLocaleString()} G</b> の黒字見込みです`;
+        verdictDiv.innerHTML = `✅ ${lapText}で1人あたり<br>約 <b>${Math.floor(profitPerPerson).toLocaleString()} G</b> の黒字見込みです`;
         verdictDiv.className = 'result profit';
     } else {
-        verdictDiv.innerHTML = `❌ ${lapText}で1人あたり約 <b>${Math.abs(Math.floor(profitPerPerson)).toLocaleString()} G</b> の赤字見込みです`;
+        verdictDiv.innerHTML = `❌ ${lapText}で1人あたり<br>約 <b>${Math.abs(Math.floor(profitPerPerson)).toLocaleString()} G</b> の赤字見込みです`;
         verdictDiv.className = 'result loss';
     }
 }
