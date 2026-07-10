@@ -14,5 +14,460 @@
         "cell": 109250,
         "shard": 14249,
         "updated_at": "2026-07-10 06:00:16"
+    },
+    "flower": {
+        "updated_at": "2026-07-10 10:15:56",
+        "items": [
+            {
+                "name": "カナリヤダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd9c",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ",
+                    "フラワーギフト券"
+                ],
+                "price": 5908
+            },
+            {
+                "name": "アンバーダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd9d",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ",
+                    "フラワーギフト券"
+                ],
+                "price": 13771
+            },
+            {
+                "name": "ベビーピンクダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd9e",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ",
+                    "フラワーギフト券"
+                ],
+                "price": 8243
+            },
+            {
+                "name": "あおりんごダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd9f",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ",
+                    "フラワーギフト券"
+                ],
+                "price": 4334
+            },
+            {
+                "name": "レモンダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dda0",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ",
+                    "フラワーギフト券"
+                ],
+                "price": 1832
+            },
+            {
+                "name": "ミントダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dda1",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ",
+                    "フラワーギフト券"
+                ],
+                "price": 29321
+            },
+            {
+                "name": "シーグリーンダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dda2",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ",
+                    "フラワーギフト券"
+                ],
+                "price": 11835
+            },
+            {
+                "name": "しらあいダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dda3",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ",
+                    "フラワーギフト券"
+                ],
+                "price": 25380
+            },
+            {
+                "name": "しゅいろダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dda4",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ",
+                    "フラワーギフト券"
+                ],
+                "price": 12183
+            },
+            {
+                "name": "ふじいろダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dda5",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ",
+                    "フラワーギフト券"
+                ],
+                "price": 9128
+            },
+            {
+                "name": "あまいろダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddb8",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ"
+                ],
+                "price": 19020
+            },
+            {
+                "name": "こげちゃダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddb9",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ"
+                ],
+                "price": 23562
+            },
+            {
+                "name": "あかねダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddba",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ"
+                ],
+                "price": 20933
+            },
+            {
+                "name": "みかんダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddbb",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ"
+                ],
+                "price": 21514
+            },
+            {
+                "name": "のうこんダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddbc",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ"
+                ],
+                "price": 17200
+            },
+            {
+                "name": "うぐいすダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddbd",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ"
+                ],
+                "price": 24074
+            },
+            {
+                "name": "ろくしょうダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddbe",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ"
+                ],
+                "price": 22715
+            },
+            {
+                "name": "うすあいダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddbf",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ"
+                ],
+                "price": 21356
+            },
+            {
+                "name": "きぞくねずダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddc0",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ"
+                ],
+                "price": 20567
+            },
+            {
+                "name": "むらさきダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddc1",
+                "cats": [
+                    "便利ツール",
+                    "トルネコ"
+                ],
+                "price": 21124
+            },
+            {
+                "name": "アイビーダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/68241910bc07819a62421c17",
+                "cats": [
+                    "便利ツール"
+                ],
+                "price": 22071
+            },
+            {
+                "name": "きみどりダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/68241910bc07819a62421c18",
+                "cats": [
+                    "便利ツール"
+                ],
+                "price": 24817
+            },
+            {
+                "name": "ライトイエロダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/68241911bc07819a62421c19",
+                "cats": [
+                    "便利ツール"
+                ],
+                "price": 18897
+            },
+            {
+                "name": "やまぶきダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/68241911bc07819a62421c1a",
+                "cats": [
+                    "便利ツール"
+                ],
+                "price": 23353
+            },
+            {
+                "name": "トマトダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/68241912bc07819a62421c1b",
+                "cats": [
+                    "便利ツール"
+                ],
+                "price": 15107
+            },
+            {
+                "name": "ホットピンクダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/68241912bc07819a62421c1c",
+                "cats": [
+                    "便利ツール"
+                ],
+                "price": 16700
+            },
+            {
+                "name": "みずいろダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/68241913bc07819a62421c1d",
+                "cats": [
+                    "便利ツール"
+                ],
+                "price": 26035
+            },
+            {
+                "name": "ゼニスブルーダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/68241913bc07819a62421c1e",
+                "cats": [
+                    "便利ツール"
+                ],
+                "price": 17057
+            },
+            {
+                "name": "グレープダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/68241914bc07819a62421c1f",
+                "cats": [
+                    "便利ツール"
+                ],
+                "price": 15834
+            },
+            {
+                "name": "フォグブルーダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/68241914bc07819a62421c20",
+                "cats": [
+                    "便利ツール"
+                ],
+                "price": 16216
+            },
+            {
+                "name": "カスタードダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dda6",
+                "cats": [
+                    "スペシャル",
+                    "トルネコ",
+                    "フラワーギフト券Ⅱ"
+                ],
+                "price": 17333
+            },
+            {
+                "name": "ふかみどりダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dda7",
+                "cats": [
+                    "スペシャル",
+                    "トルネコ",
+                    "フラワーギフト券Ⅱ"
+                ],
+                "price": 43773
+            },
+            {
+                "name": "しろはなだダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dda8",
+                "cats": [
+                    "スペシャル",
+                    "トルネコ",
+                    "フラワーギフト券Ⅱ"
+                ],
+                "price": 46936
+            },
+            {
+                "name": "ダークブルーダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dda9",
+                "cats": [
+                    "スペシャル",
+                    "トルネコ",
+                    "フラワーギフト券Ⅱ"
+                ],
+                "price": 42600
+            },
+            {
+                "name": "ピュアブルーダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddaa",
+                "cats": [
+                    "スペシャル",
+                    "トルネコ",
+                    "フラワーギフト券Ⅱ"
+                ],
+                "price": 35011
+            },
+            {
+                "name": "パープルダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddab",
+                "cats": [
+                    "スペシャル",
+                    "トルネコ",
+                    "フラワーギフト券Ⅱ"
+                ],
+                "price": 42584
+            },
+            {
+                "name": "マゼンタダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddac",
+                "cats": [
+                    "スペシャル",
+                    "トルネコ",
+                    "フラワーギフト券Ⅱ"
+                ],
+                "price": 38175
+            },
+            {
+                "name": "うめねずダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddad",
+                "cats": [
+                    "スペシャル",
+                    "トルネコ",
+                    "フラワーギフト券Ⅱ"
+                ],
+                "price": 46732
+            },
+            {
+                "name": "しらふじいろダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddae",
+                "cats": [
+                    "スペシャル",
+                    "トルネコ",
+                    "フラワーギフト券Ⅱ"
+                ],
+                "price": 46838
+            },
+            {
+                "name": "うすざくらダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddaf",
+                "cats": [
+                    "スペシャル",
+                    "トルネコ",
+                    "フラワーギフト券Ⅱ"
+                ],
+                "price": 45983
+            },
+            {
+                "name": "ルビーダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddb0",
+                "cats": [
+                    "スペシャル",
+                    "トルネコ",
+                    "フラワーギフト券Ⅱ"
+                ],
+                "price": 39292
+            },
+            {
+                "name": "ガーネットダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddb1",
+                "cats": [
+                    "スペシャル",
+                    "トルネコ",
+                    "フラワーギフト券Ⅱ"
+                ],
+                "price": 41962
+            },
+            {
+                "name": "コルクダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddb2",
+                "cats": [
+                    "スペシャル",
+                    "トルネコ",
+                    "フラワーギフト券Ⅱ"
+                ],
+                "price": 45236
+            },
+            {
+                "name": "ライトグレーダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddb3",
+                "cats": [
+                    "スペシャル",
+                    "トルネコ",
+                    "フラワーギフト券Ⅱ"
+                ],
+                "price": 46221
+            },
+            {
+                "name": "アッシュダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddb4",
+                "cats": [
+                    "スペシャル",
+                    "トルネコ",
+                    "フラワーギフト券Ⅱ"
+                ],
+                "price": 44462
+            },
+            {
+                "name": "ローズグレーダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddb5",
+                "cats": [
+                    "スペシャル",
+                    "トルネコ",
+                    "フラワーギフト券Ⅱ"
+                ],
+                "price": 44408
+            },
+            {
+                "name": "スチールダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddb6",
+                "cats": [
+                    "スペシャル",
+                    "トルネコ",
+                    "フラワーギフト券Ⅱ"
+                ],
+                "price": 44750
+            },
+            {
+                "name": "しっこくダリア",
+                "url": "https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67ddb7",
+                "cats": [
+                    "スペシャル",
+                    "トルネコ",
+                    "フラワーギフト券Ⅱ"
+                ],
+                "price": 41118
+            }
+        ]
     }
 }
