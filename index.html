@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DQX 金策期待値計算</title>
 <style>
+html {
+    scrollbar-gutter: stable;
+}
 body {
     font-family: sans-serif;
     background: #121212;
@@ -28,38 +31,44 @@ h1 {
     text-align: center;
     font-size: 22px;
     margin-top: 0;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     color: #ffffff;
 }
-.sub-text {
-    text-align: center;
-    color: #aaaaaa;
-    font-size: 14px;
-    margin-bottom: 20px;
-}
-/* タブ */
-.tabs {
+/* レイアウト */
+.layout {
     display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+/* サイドバータブ */
+.sidebar {
+    width: 120px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
     gap: 8px;
-    margin-bottom: 20px;
 }
 .tab-btn {
-    flex: 1;
-    padding: 10px;
+    padding: 10px 8px;
     border: 1px solid #3d3d3d;
     border-radius: 6px;
     background: #252525;
     color: #aaaaaa;
-    font-size: 14px;
+    font-size: 13px;
     cursor: pointer;
     text-align: center;
     transition: all 0.15s;
+    line-height: 1.4;
 }
 .tab-btn.active {
     background: #2d2d2d;
     color: #ffffff;
     border-color: #888888;
     font-weight: bold;
+}
+.main-content {
+    flex: 1;
+    min-width: 0;
 }
 .tab-content { display: none; }
 .tab-content.active { display: block; }
@@ -70,7 +79,7 @@ h1 {
     color: #aaaaaa;
 }
 .result {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: bold;
     text-align: center;
     margin: 0 0 8px 0;
@@ -115,22 +124,22 @@ h1 {
 }
 table {
     width: 100%;
-    margin-top: 20px;
+    margin-top: 12px;
     border-collapse: collapse;
     background: #252525;
 }
 th, td {
     border: 1px solid #3d3d3d;
-    padding: 10px;
+    padding: 8px;
     text-align: right;
 }
 th {
     background-color: #2d2d2d;
     color: #ffffff;
     text-align: center;
-    font-size: 14px;
+    font-size: 13px;
 }
-td { font-size: 15px; }
+td { font-size: 14px; }
 td:first-child {
     text-align: center;
     font-weight: bold;
@@ -143,9 +152,8 @@ td.error-cell {
 .dogdra-controls {
     display: flex;
     gap: 16px;
-    margin-bottom: 16px;
+    margin: 12px 0;
     align-items: center;
-    flex-wrap: wrap;
     justify-content: center;
 }
 .dogdra-controls label {
@@ -155,7 +163,6 @@ td.error-cell {
     align-items: center;
     gap: 8px;
 }
-.dogdra-controls select,
 .dogdra-controls input[type=number] {
     background: #2d2d2d;
     border: 1px solid #3d3d3d;
@@ -163,49 +170,76 @@ td.error-cell {
     border-radius: 4px;
     padding: 4px 8px;
     font-size: 14px;
-    width: 70px;
+    width: 60px;
 }
 .dogdra-summary {
-    margin-top: 16px;
+    margin-top: 12px;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
 }
 .summary-card {
     background: #252525;
     border: 1px solid #3d3d3d;
     border-radius: 6px;
-    padding: 12px;
+    padding: 10px;
     text-align: center;
 }
 .summary-card .label {
-    font-size: 12px;
+    font-size: 11px;
     color: #aaaaaa;
     margin-bottom: 4px;
 }
 .summary-card .value {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
     color: #ffffff;
 }
+.summary-sub {
+    margin-top: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+.sub-card {
+    background: #1e1e1e;
+    border: 1px solid #3d3d3d;
+    border-radius: 6px;
+    padding: 6px 10px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.sub-card .label {
+    font-size: 11px;
+    color: #888888;
+    white-space: nowrap;
+}
+.sub-card .value {
+    font-size: 13px;
+    font-weight: bold;
+    color: #cccccc;
+}
 /* 共通 */
 .info-section {
-    margin-top: 30px;
+    margin-top: 24px;
     border-top: 1px solid #3d3d3d;
-    padding-top: 20px;
+    padding-top: 16px;
     font-size: 13px;
     color: #b0b0b0;
     line-height: 1.6;
 }
 .info-section h2 {
-    font-size: 15px;
+    font-size: 14px;
     color: #ffffff;
-    margin-top: 15px;
-    margin-bottom: 5px;
+    margin-top: 12px;
+    margin-bottom: 4px;
     border-left: 4px solid #888888;
     padding-left: 8px;
 }
-.info-section p { margin: 5px 0 10px 0; }
+.info-section p { margin: 4px 0 8px 0; }
 code {
     background: #2d2d2d;
     padding: 2px 6px;
@@ -240,10 +274,11 @@ a.hidden-link:hover { color: inherit; text-decoration: none; }
     body { padding: 10px; }
     .card { padding: 15px; }
     h1 { font-size: 18px; }
-    .result { font-size: 15px; padding: 10px; line-height: 1.4; }
-    th { font-size: 11px; padding: 6px 4px; }
-    td { font-size: 12px; padding: 8px 4px; }
-    .dogdra-summary { grid-template-columns: 1fr 1fr 1fr; }
+    .sidebar { width: 90px; }
+    .tab-btn { font-size: 11px; padding: 8px 4px; }
+    .result { font-size: 14px; padding: 10px; line-height: 1.4; }
+    th { font-size: 10px; padding: 5px 3px; }
+    td { font-size: 11px; padding: 6px 3px; }
     .summary-card .value { font-size: 13px; }
     .info-section { font-size: 12px; }
     .credit-footer { font-size: 11px; }
@@ -253,123 +288,139 @@ a.hidden-link:hover { color: inherit; text-decoration: none; }
 <body>
 <div class="card">
     <h1>DQX 金策期待値計算</h1>
-    <br>
 
     <div id="loading" class="loading">データを読み込み中...</div>
 
     <div id="main-content" style="display:none;">
-        <!-- タブ -->
-        <div class="tabs">
-            <div class="tab-btn active" onclick="switchTab('fukubiki')">ふくびき比較</div>
-            <div class="tab-btn" onclick="switchTab('dogdra')">ドグドラ持ち寄り</div>
-        </div>
-
-        <!-- ふくびきタブ -->
-        <div id="tab-fukubiki" class="tab-content active">
-            <div id="fuku-error-banner" class="error-banner">
-                ⚠️ 一部の価格データを取得できませんでした。時間をおいて再度確認してください。
+        <div class="layout">
+            <!-- サイドバータブ -->
+            <div class="sidebar">
+                <div class="tab-btn active" onclick="switchTab('fukubiki')">ふくびき比較</div>
+                <div class="tab-btn" onclick="switchTab('dogdra')">ドグドラ持ち寄り</div>
             </div>
 
-            <div id="fuku-verdict" class="result">─</div>
+            <!-- メインコンテンツ -->
+            <div class="main-content">
 
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width:22%">大陸</th>
-                        <th style="width:20%">1等価格</th>
-                        <th style="width:20%">2等価格</th>
-                        <th style="width:20%">3等価格</th>
-                        <th style="width:18%">期待値/1回</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>オーグリード<br><span style="font-size:11px;color:#aaa;font-weight:normal;">（7日間平均価格）</span></td>
-                        <td id="o1"><a id="o1-link" href="https://dqx-souba.game-blog.app/item/detail/69eb1ee7cf3b22281bbdb0ed" target="_blank" rel="noopener" class="hidden-link">─</a></td>
-                        <td id="o2"><a id="o2-link" href="https://dqx-souba.game-blog.app/item/detail/6967250f1dc565c0c0137140" target="_blank" rel="noopener" class="hidden-link">─</a></td>
-                        <td id="o3"><a id="o3-link" href="https://dqx-souba.game-blog.app/item/detail/6848bb617d51a045f9b67f69" target="_blank" rel="noopener" class="hidden-link">─</a></td>
-                        <td id="o-score">─</td>
-                    </tr>
-                    <tr>
-                        <td>ドワチャッカ<br><span style="font-size:11px;color:#aaa;font-weight:normal;">（店売り価格）</span></td>
-                        <td id="g1">─</td>
-                        <td id="g2">─</td>
-                        <td id="g3">─</td>
-                        <td id="g-score">─</td>
-                    </tr>
-                </tbody>
-            </table>
+                <!-- ふくびきタブ -->
+                <div id="tab-fukubiki" class="tab-content active">
+                    <div id="fuku-error-banner" class="error-banner">
+                        ⚠️ 一部の価格データを取得できませんでした。時間をおいて再度確認してください。
+                    </div>
 
-            <p class="timestamp">データ最終更新日時: <span id="fuku-update-time">─</span></p>
+                    <div id="fuku-verdict" class="result">─</div>
 
-            <div class="info-section">
-                <h2>計算式について</h2>
-                <p>1〜3等の景品バザー価格をそれぞれ <code>x, y, z</code> とし、ゲーム内通常確率（1等: 0.16% / 2等: 0.24% / 3等: 0.32%）を乗じた <code>0.0016x + 0.0024y + 0.0032z</code> を1回あたりの期待値（1〜3等分のみ）として表示しています。チャンスモード時の確率・4等以下の共通景品は考慮していません。</p>
-                <p>ドワチャッカの景品価格は常に固定（1等: 297,000G / 2等: 150,000G / 3等: 80,000G）のため、期待値は <code>1,091 G</code> で変わりません。</p>
-                <h2>データ引用元</h2>
-                <p>オーグリードの相場は <a href="https://dqx-souba.game-blog.app" target="_blank" rel="noopener">DQX相場情報サイト</a> の7日間平均価格を毎日自動取得しています。</p>
-                <h2>面白いダジャレ</h2>
-                <p>ドワチャッカのドア着火・・・ｗ</p>
-            </div>
-        </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:24%">大陸</th>
+                                <th style="width:19%">1等価格</th>
+                                <th style="width:19%">2等価格</th>
+                                <th style="width:19%">3等価格</th>
+                                <th style="width:19%">期待値/1回</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>オーグリード<br><span style="font-size:10px;color:#aaa;font-weight:normal;">（7日間平均価格）</span></td>
+                                <td id="o1"><a id="o1-link" href="https://dqx-souba.game-blog.app/item/detail/69eb1ee7cf3b22281bbdb0ed" target="_blank" rel="noopener" class="hidden-link">─</a></td>
+                                <td id="o2"><a id="o2-link" href="https://dqx-souba.game-blog.app/item/detail/6967250f1dc565c0c0137140" target="_blank" rel="noopener" class="hidden-link">─</a></td>
+                                <td id="o3"><a id="o3-link" href="https://dqx-souba.game-blog.app/item/detail/6848bb617d51a045f9b67f69" target="_blank" rel="noopener" class="hidden-link">─</a></td>
+                                <td id="o-score">─</td>
+                            </tr>
+                            <tr>
+                                <td>ドワチャッカ<br><span style="font-size:10px;color:#aaa;font-weight:normal;">（店売り価格）</span></td>
+                                <td id="g1">─</td>
+                                <td id="g2">─</td>
+                                <td id="g3">─</td>
+                                <td id="g-score">─</td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-        <!-- ドグドラタブ -->
-        <div id="tab-dogdra" class="tab-content">
-            <div id="dogdra-error-banner" class="error-banner">
-                ⚠️ 一部の価格データを取得できませんでした。時間をおいて再度確認してください。
-            </div>
+                    <p class="timestamp">データ最終更新日時: <span id="fuku-update-time">─</span></p>
 
-            <div class="dogdra-controls">
-                <label>周数（1周あたり4人で4戦）
-                    <input type="number" id="dogdra-laps" value="1" min="1" max="99" onchange="calcDogdra()" oninput="calcDogdra()">
-                </label>
-            </div>
-
-            <div id="dogdra-verdict" class="result">─</div>
-
-            <div class="dogdra-summary" style="grid-template-columns: 1fr 1fr;">
-                <div class="summary-card">
-                    <div class="label">1人あたりコスト</div>
-                    <div class="value" id="dd-cost">─</div>
+                    <div class="info-section">
+                        <h2>計算式について</h2>
+                        <p>1〜3等の景品バザー価格をそれぞれ <code>x, y, z</code> とし、ゲーム内通常確率（1等: 0.16% / 2等: 0.24% / 3等: 0.32%）を乗じた <code>0.0016x + 0.0024y + 0.0032z</code> を1回あたりの期待値（1〜3等分のみ）として表示しています。チャンスモード時の確率・4等以下の共通景品は考慮していません。</p>
+                        <p>ドワチャッカの景品価格は常に固定（1等: 297,000G / 2等: 150,000G / 3等: 80,000G）のため、期待値は <code>1,091 G</code> で変わりません。</p>
+                        <h2>データ引用元</h2>
+                        <p>オーグリードの相場は <a href="https://dqx-souba.game-blog.app" target="_blank" rel="noopener">DQX相場情報サイト</a> の7日間平均価格を毎日自動取得しています。</p>
+                        <h2>面白いダジャレ</h2>
+                        <p>ドワチャッカのドア着火・・・ｗ</p>
+                    </div>
                 </div>
-                <div class="summary-card">
-                    <div class="label">1人あたり期待報酬</div>
-                    <div class="value" id="dd-reward">─</div>
+
+                <!-- ドグドラタブ -->
+                <div id="tab-dogdra" class="tab-content">
+                    <div id="dogdra-error-banner" class="error-banner">
+                        ⚠️ 一部の価格データを取得できませんでした。時間をおいて再度確認してください。
+                    </div>
+
+                    <div id="dogdra-verdict" class="result">─</div>
+
+                    <div class="dogdra-summary">
+                        <div class="summary-card">
+                            <div class="label">1人あたりコスト</div>
+                            <div class="value" id="dd-cost">─</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="label">1人あたり期待報酬</div>
+                            <div class="value" id="dd-reward">─</div>
+                        </div>
+                    </div>
+                    <div class="summary-sub">
+                        <div class="sub-card">
+                            <span class="label">下振れ時（砕片45×4戦）</span>
+                            <span class="value" id="dd-low">─</span>
+                        </div>
+                        <div class="sub-card">
+                            <span class="label">上振れ時（核×4戦）</span>
+                            <span class="value" id="dd-high">─</span>
+                        </div>
+                    </div>
+
+                    <div class="dogdra-controls">
+                        <label>周数（1周あたり4人で4戦）
+                            <input type="number" id="dogdra-laps" value="1" min="1" max="99" onchange="calcDogdra()" oninput="calcDogdra()">
+                        </label>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:20%">アイテム</th>
+                                <th style="width:40%">バザー相場</th>
+                                <th style="width:40%">備考</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>魔因細胞</td>
+                                <td id="dd-cell-price"><a id="dd-cell-link" href="https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd4b" target="_blank" rel="noopener" class="hidden-link">─</a></td>
+                                <td id="dd-cell-total" style="font-size:12px;color:#aaa;">─</td>
+                            </tr>
+                            <tr>
+                                <td>輝晶の砕片</td>
+                                <td id="dd-shard-price"><a id="dd-shard-link" href="https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd4a" target="_blank" rel="noopener" class="hidden-link">─</a></td>
+                                <td id="dd-shard-total" style="font-size:12px;color:#aaa;">─</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p class="timestamp">データ最終更新日時: <span id="dogdra-update-time">─</span></p>
+
+                    <div class="info-section">
+                        <h2>計算式について</h2>
+                        <p>4人持ち寄りで1周4戦を前提としています。1人あたり魔因細胞30個／周が持ち寄りコストです。ドロップは砕片45個（45%）/ 砕片75個（45%）/ 輝晶核1個（10%）の3パターンで、輝晶核は砕片99個換算で計算しています。※確率は推定</p>
+                        <p>1戦あたりの期待砕片数 = <code>0.45×45 + 0.45×75 + 0.10×99 = 63.9個</code>。バザー手数料5%を差し引いた <code>63.9 × 砕片価格 × 0.95 × 4戦</code> が1周あたりの期待報酬です。</p>
+                        <h2>データ引用元</h2>
+                        <p>魔因細胞・輝晶の砕片の相場は <a href="https://dqx-souba.game-blog.app" target="_blank" rel="noopener">DQX相場情報サイト</a> の7日間平均価格を毎日自動取得しています。</p>
+                    </div>
                 </div>
-            </div>
 
-            <table style="margin-top:16px;">
-                <thead>
-                    <tr>
-                        <th style="width:20%">アイテム</th>
-                        <th style="width:40%">バザー相場</th>
-                        <th style="width:40%">備考</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>魔因細胞</td>
-                        <td id="dd-cell-price"><a id="dd-cell-link" href="https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd4b" target="_blank" rel="noopener" class="hidden-link">─</a></td>
-                        <td id="dd-cell-total" style="font-size:13px;color:#aaa;">─</td>
-                    </tr>
-                    <tr>
-                        <td>輝晶の砕片</td>
-                        <td id="dd-shard-price"><a id="dd-shard-link" href="https://dqx-souba.game-blog.app/item/detail/636e62ea1807614fdf67dd4a" target="_blank" rel="noopener" class="hidden-link">─</a></td>
-                        <td id="dd-shard-total" style="font-size:13px;color:#aaa;">─</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <p class="timestamp">データ最終更新日時: <span id="dogdra-update-time">─</span></p>
-
-            <div class="info-section">
-                <h2>計算式について</h2>
-                <p>4人持ち寄りで1周4戦を前提としています。1人あたり魔因細胞30個／周が持ち寄りコストです。ドロップは砕片45個（45%）/ 砕片75個（45%）/ 輝晶核1個（10%）の3パターンで、輝晶核は砕片99個換算で計算しています。※確率は推定</p>
-                <p>1戦あたりの期待砕片数 = <code>0.45×45 + 0.45×75 + 0.10×99 = 63.9個</code>。バザー手数料5%を差し引いた <code>63.9 × 砕片価格 × 0.95 × 4戦</code> が1周あたりの期待報酬です。</p>
-                <h2>データ引用元</h2>
-                <p>魔因細胞・輝晶の砕片の相場は <a href="https://dqx-souba.game-blog.app" target="_blank" rel="noopener">DQX相場情報サイト</a> の7日間平均価格を毎日自動取得しています。</p>
-            </div>
-        </div>
+            </div><!-- /.main-content -->
+        </div><!-- /.layout -->
     </div>
 </div>
 
@@ -407,6 +458,11 @@ function calcDogdra() {
 
     document.getElementById('dd-cost').innerText   = Math.floor(costPerPerson).toLocaleString() + ' G';
     document.getElementById('dd-reward').innerText = Math.floor(rewardPerPerson).toLocaleString() + ' G';
+
+    const lowReward  = 45 * shard * 0.95 * totalBattles;
+    const highReward = 99 * shard * 0.95 * totalBattles;
+    document.getElementById('dd-low').innerText  = Math.floor(lowReward).toLocaleString()  + ' G';
+    document.getElementById('dd-high').innerText = Math.floor(highReward).toLocaleString() + ' G';
 
     const verdictDiv = document.getElementById('dogdra-verdict');
     const lapText    = laps > 1 ? `${laps}周（計${totalBattles}戦）` : `${totalBattles}戦`;
@@ -474,14 +530,14 @@ fetch('./data.json', { cache: 'no-store' })
                 ? `<b style="color:#ffd43b;">${gEV.toLocaleString()} G</b>` : `${gEV.toLocaleString()} G`;
 
             if (oScore > gScore && diff >= 5000) {
-                verdictDiv.innerHTML = `🔥 現在は「オーグリード大陸」で引くのがお得です<br><span style="font-size:14px;font-weight:normal;color:#aaa;">ドワチャッカより <b>約${diff.toLocaleString()} G</b> お得（100回換算）</span>`;
+                verdictDiv.innerHTML = `🔥 現在は「オーグリード大陸」で引くのがお得です<br><span style="font-size:13px;font-weight:normal;color:#aaa;">ドワチャッカより <b>約${diff.toLocaleString()} G</b> お得（100回換算）</span>`;
                 verdictDiv.className = 'result orgo';
             } else if (gScore > oScore && diff >= 5000) {
-                verdictDiv.innerHTML = `💎 現在は「ドワチャッカ大陸」で引くのがお得です<br><span style="font-size:14px;font-weight:normal;color:#aaa;">オーグリードより <b>約${diff.toLocaleString()} G</b> お得（100回換算）</span>`;
+                verdictDiv.innerHTML = `💎 現在は「ドワチャッカ大陸」で引くのがお得です<br><span style="font-size:13px;font-weight:normal;color:#aaa;">オーグリードより <b>約${diff.toLocaleString()} G</b> お得（100回換算）</span>`;
                 verdictDiv.className = 'result gata';
             } else {
                 const leader = oScore > gScore ? 'オーグリードの方が' : 'ドワチャッカの方が';
-                verdictDiv.innerHTML = `⚖️ 両大陸の期待値は現在ほぼ同等です<br><span style="font-size:14px;font-weight:normal;color:#aaa;">${leader} <b>約${diff.toLocaleString()} G</b> だけお得（100回換算）</span>`;
+                verdictDiv.innerHTML = `⚖️ 両大陸の期待値は現在ほぼ同等です<br><span style="font-size:13px;font-weight:normal;color:#aaa;">${leader} <b>約${diff.toLocaleString()} G</b> だけお得（100回換算）</span>`;
                 verdictDiv.className = 'result even';
             }
         }
