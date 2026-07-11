@@ -569,7 +569,20 @@ function switchTab(name) {
     });
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.getElementById('tab-' + name).classList.add('active');
+    history.replaceState(null, '', '#' + name);
 }
+
+// ページ読み込み時にハッシュからタブを復元
+(function() {
+    const hash = location.hash.replace('#', '');
+    if (['fukubiki', 'dogdra', 'flower'].includes(hash)) {
+        document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+            btn.classList.toggle('active', ['fukubiki','dogdra','flower'][i] === hash);
+        });
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-' + hash).classList.add('active');
+    }
+})();
 
 let currentFilter = 'all';
 let sortKey = null;
