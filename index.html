@@ -97,12 +97,14 @@ h1 {
     pointer-events: none;
     overflow: hidden;
     min-height: 0;
+    z-index: 0;
 }
 .tab-content.active {
     visibility: visible;
     pointer-events: auto;
     overflow-y: auto;
     min-height: 0;
+    z-index: 1;
 }
 /* フラワータブはflexで縦方向に埋める */
 #tab-flower.tab-content.active {
@@ -288,10 +290,8 @@ code {
 /* フラワーテーブル */
 .flower-table-wrapper {
     flex: 1;
-    min-height: 80px;
+    min-height: 0;
     overflow-y: auto;
-    border: 1px solid #3d3d3d;
-    border-radius: 4px;
     margin-top: 12px;
 }
 .flower-table-wrapper table {
