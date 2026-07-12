@@ -15,7 +15,9 @@ body {
     text-align: center;
     padding: 16px 20px;
     margin: 0;
-    min-height: 100vh;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -34,7 +36,8 @@ body {
     text-align: left;
     display: flex;
     flex-direction: column;
-    max-height: calc(100vh - 64px);
+    flex: 1;
+    min-height: 0;
     overflow: hidden;
 }
 h1 {
@@ -83,20 +86,29 @@ h1 {
 .main-content {
     flex: 1;
     min-width: 0;
+    min-height: 0;
     display: grid;
     grid-template-columns: 1fr;
-    min-height: 0;
+    grid-template-rows: 1fr;
 }
 .tab-content {
     grid-area: 1 / 1;
     visibility: hidden;
     pointer-events: none;
     overflow: hidden;
+    min-height: 0;
 }
 .tab-content.active {
     visibility: visible;
     pointer-events: auto;
     overflow-y: auto;
+    min-height: 0;
+}
+/* フラワータブはflexで縦方向に埋める */
+#tab-flower.tab-content.active {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 /* 結果表示 */
 .loading {
@@ -275,7 +287,8 @@ code {
 }
 /* フラワーテーブル */
 .flower-table-wrapper {
-    max-height: 460px;
+    flex: 1;
+    min-height: 80px;
     overflow-y: auto;
     border: 1px solid #3d3d3d;
     border-radius: 4px;
@@ -302,17 +315,7 @@ code {
     flex-wrap: wrap;
     gap: 6px;
     margin-bottom: 12px;
-}
-@media (max-width: 520px) {
-    .filter-btns {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        padding-bottom: 2px;
-    }
-    .filter-btn {
-        flex: 0 0 auto;
-        white-space: nowrap;
-    }
+    justify-content: center;
 }
 .filter-btn {
     padding: 5px 10px;
@@ -357,15 +360,16 @@ a.hidden-link:hover { color: inherit; text-decoration: none; }
     margin-bottom: 0;
 }
 .credit-footer {
-    margin-top: 20px;
+    margin-top: 4px;
     text-align: center;
     font-size: 12px;
     color: #888888;
+    flex-shrink: 0;
 }
 .credit-footer a, .credit-footer span { margin: 0 3px; }
 @media (max-width: 520px) {
-    body { padding: 10px; gap: 8px; }
-    .card { padding: 15px; max-height: calc(100vh - 52px); }
+    body { padding: 10px; gap: 6px; }
+    .card { padding: 15px; }
     h1 { font-size: 18px; margin-bottom: 12px; }
     .result { font-size: 14px; padding: 10px; line-height: 1.4; }
     th { font-size: 10px; padding: 5px 3px; }
@@ -382,6 +386,7 @@ a.hidden-link:hover { color: inherit; text-decoration: none; }
         gap: 6px;
         padding-bottom: 2px;
         align-self: auto;
+        justify-content: center;
     }
     .tab-btn {
         flex: 0 0 auto;
@@ -389,7 +394,6 @@ a.hidden-link:hover { color: inherit; text-decoration: none; }
         padding: 8px 12px;
         white-space: nowrap;
     }
-    .flower-table-wrapper { max-height: 360px; }
 }
 </style>
 </head>
