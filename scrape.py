@@ -6,9 +6,9 @@ import requests
 from bs4 import BeautifulSoup
 
 URLS = {
-    "fuku_x": "https://dqx-souba.game-blog.app/item/detail/69eb1ee7cf3b22281bbdb0ed",
-    "fuku_y": "https://dqx-souba.game-blog.app/item/detail/6967250f1dc565c0c0137140",
-    "fuku_z": "https://dqx-souba.game-blog.app/item/detail/6848bb617d51a045f9b67f69",
+    "fuku_x": "https://dqx-souba.game-blog.app/item/detail/6a6c1abcdf7f8ffc7562b9d7",
+    "fuku_y": "https://dqx-souba.game-blog.app/item/detail/69eb1ee7cf3b22281bbdb0ed",
+    "fuku_z": "https://dqx-souba.game-blog.app/item/detail/6967250f1dc565c0c0137140",
 }
 
 HEADERS = {
